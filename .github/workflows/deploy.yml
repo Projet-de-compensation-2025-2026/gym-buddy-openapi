@@ -1,0 +1,48 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  pages:
+    name: pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage spec
+        run: |
+          mkdir -p _site
+          cp -a openapi/. _site/
+          if [[ -f _site/openapi.yaml ]]; then
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Gym Buddy API</title><h1>Gym Buddy API</h1><p><a href="openapi.yaml">openapi.yaml</a></p>' > _site/index.html
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

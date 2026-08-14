@@ -1,0 +1,24 @@
+openapi: 3.1.0
+info:
+  title: Gym Buddy API
+  version: 0.1.0
+  description: Canonical HTTP contract. Expand this file; do not treat a running Spring /v3/api-docs as source of truth.
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness probe
+      responses:
+        "200":
+          description: Process is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
