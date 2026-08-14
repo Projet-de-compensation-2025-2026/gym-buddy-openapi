@@ -3,13 +3,19 @@ info:
   title: Gym Buddy API
   version: 0.1.0
   description: Canonical HTTP contract. Expand this file; do not treat a running Spring /v3/api-docs as source of truth.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
   - url: /api/v1
+security:
+  - bearerAuth: []
 paths:
   /health:
     get:
       operationId: getHealth
       summary: Liveness probe
+      security: []
       responses:
         "200":
           description: Process is up
@@ -22,3 +28,11 @@ paths:
                   status:
                     type: string
                     example: ok
+        "503":
+          description: Process is not ready
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
