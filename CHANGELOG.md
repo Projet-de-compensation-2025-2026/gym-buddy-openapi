@@ -8,6 +8,10 @@ Versioning: [Semantic Versioning](https://semver.org/).
 ### Added
 
 - GitHub Actions CI on `develop`, Release squash+tag onto `main`, Deploy to GitHub Pages
-- Stub OpenAPI document at `openapi/openapi.yaml` (`GET /health`)
+- Stub OpenAPI document at `openapi/openapi.yaml`
+
+### Changed
+
+- Health contract: `GET /health` replaced by unauthenticated `GET /healthz` (liveness) and `GET /readyz` (PostgreSQL + object storage)
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi
