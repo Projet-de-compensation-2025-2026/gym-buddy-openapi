@@ -9,6 +9,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 - GitHub Actions CI on `develop`, Release squash+tag onto `main`, Deploy to GitHub Pages
 - Stub OpenAPI document at `openapi/openapi.yaml`
+- Auth contract: `POST /auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout` (access JWT in JSON, HttpOnly refresh cookie)
 
 ### Changed
 
