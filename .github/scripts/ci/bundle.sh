@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Produce the single-file OpenAPI 3.1 document consumers generate from.
-# Source of truth is the $ref tree rooted at openapi/openapi.yaml.
+# Resolve the $ref tree into one file. CI uses this as a resolve check only.
+# Do not check the output in. Generators read openapi/openapi.yaml.
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$root"
