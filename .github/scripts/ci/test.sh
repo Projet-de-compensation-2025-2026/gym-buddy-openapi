@@ -11,8 +11,8 @@ if [[ ! -f package.json ]]; then
   echo "TEST FAIL: package.json missing (consumers pin this package by tag)" >&2
   exit 1
 fi
-if [[ ! -f openapi/bundled.yaml ]]; then
-  echo "TEST FAIL: openapi/bundled.yaml missing (today's service fetch file; run bash .github/scripts/ci/bundle.sh)" >&2
+if [[ -n "$(git ls-files -- openapi/bundled.yaml)" ]]; then
+  echo "TEST FAIL: openapi/bundled.yaml must not be checked in (ticket #54)" >&2
   exit 1
 fi
 
@@ -39,14 +39,10 @@ print(f"TEST OK: package {pkg['name']}@{ver} matches info.version")
 PY
 
 npx --yes @redocly/cli@1 lint openapi/openapi.yaml
-npx --yes @redocly/cli@1 lint openapi/bundled.yaml
 
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 bash .github/scripts/ci/bundle.sh "$tmpdir/bundled.yaml"
-if ! diff -u openapi/bundled.yaml "$tmpdir/bundled.yaml"; then
-  echo "TEST FAIL: openapi/bundled.yaml is stale; run bash .github/scripts/ci/bundle.sh" >&2
-  exit 1
-fi
+npx --yes @redocly/cli@1 lint "$tmpdir/bundled.yaml"
 
-echo "TEST OK: OpenAPI \$ref tree lints; today's bundled.yaml fetch file is current"
+echo "TEST OK: OpenAPI \$ref tree lints; temp bundle is lint-only and not checked in"

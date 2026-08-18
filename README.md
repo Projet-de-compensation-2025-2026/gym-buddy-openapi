@@ -16,13 +16,13 @@ pnpm add github:Projet-de-compensation-2025-2026/gym-buddy-openapi#v0.1.0
 
 npm / yarn use the same GitHub URL (`github:Projet-de-compensation-2025-2026/gym-buddy-openapi#v0.1.0`). The package contents are the `$ref` tree under `openapi/`.
 
-There is **no** tag yet. After this lands on `develop`, Sentinel / Release must run **Actions → Release** (or `gh workflow run Release -f version=0.1.0`) so the first annotated tag is **`v0.1.0`** on `main`. Feature branches do not push tags.
+Git tag **v0.1.0** exists (`info.version` `0.1.0`; ticket **#46** Done). Feature branches do not push tags. Later `0.1.x` tags are cut with **Actions → Release**.
 
-A Maven / OpenAPI Generator consumer checks out that same tag (or depends on the git package) and points `inputSpec` at `openapi/openapi.yaml`. Switching `gym-buddy-service` and `gym-buddy-ui` is sibling work (**#47** / **#48**), not this repo.
+A Maven / OpenAPI Generator consumer checks out that same tag (or depends on the git package) and points `inputSpec` at `openapi/openapi.yaml`. **Today** `gym-buddy-service` `develop` **`3ffdef8`** (ticket **#47** Done) and `gym-buddy-ui` `develop` **`47eac9c`** (ticket **#48** Done) already generate from that tree. They do **not** read `bundled.yaml`. Ticket **#40** / **#46** / **#47** / **#48** stay **Done** as history.
 
 ## Generate from the `$ref` tree
 
-**Target:** point generators at the tree root:
+Point generators at the tree root:
 
 ```text
 node_modules/gym-buddy-openapi/openapi/openapi.yaml
@@ -34,23 +34,22 @@ or, from a checkout of tag `v0.1.0`:
 openapi/openapi.yaml
 ```
 
-`openapi/bundled.yaml` is **not** the target source of truth. It remains the **current** `gym-buddy-service` `generate-sources` fetch file (raw `develop` / `openapi/bundled.yaml`) until ticket **#47** switches the service. Keep it checked in and current (`bash .github/scripts/ci/bundle.sh`). Do **not** vendor YAML into `gym-buddy-ui`. Do **not** treat Spring `springdoc` `/v3/api-docs` as the published contract.
+Ticket **#54** deletes the former checked-in `openapi/bundled.yaml`. It is **not** a consumer input. Dual maintenance of a second consumer document is no longer required. CI may flatten a **temp** bundle as a lint check (`bash .github/scripts/ci/bundle.sh /tmp/bundled.yaml`); do **not** check that file in. Do **not** vendor YAML into `gym-buddy-ui`. Do **not** treat Spring `springdoc` `/v3/api-docs` as the published contract.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
 | `package.json` | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`. |
-| `openapi/openapi.yaml` | Thin root. **Edit source and target generator entry.** |
+| `openapi/openapi.yaml` | Thin root. **Edit source and generator entry.** |
 | `openapi/paths/` | Path items (`health`, `auth`) |
 | `openapi/components/schemas/entities/` | Shared entities (`HealthStatus`, `RegisteredUser`, `ErrorResponse`, …) |
 | `openapi/components/schemas/requests/` | Request bodies (`RegisterRequest`, `LoginRequest`) |
 | `openapi/components/schemas/responses/` | Response bodies (`AccessTokenResponse`) |
 | `openapi/components/securitySchemes.yaml` | `bearerAuth`, `refreshCookie` |
 | `openapi/components/headers.yaml` | Refresh `Set-Cookie` / clear-cookie headers |
-| `openapi/bundled.yaml` | **Today’s service fetch file** (until #47). Not the target SoT. CI keeps it in sync with the tree. |
 
-The tree is the edit format. The package / tagged checkout is how new consumers should see it. Drop the checked-in bundle only when #47 lands — not in this ticket.
+The tree is the edit format and the consumer input. The package / tagged checkout is how consumers see it.
 
 ## Current contract (`0.1.0`)
 
@@ -63,6 +62,6 @@ Server prefix `/api/v1`:
 
 | Workflow | Trigger | Promise |
 | --- | --- | --- |
-| CI | PR / push on `develop` | format, lint the `$ref` tree and the bundle, package/`info.version` match, bundle freshness, YAML served over HTTP |
-| Release | `workflow_dispatch` | squash `develop` → `main`, tag `vX.Y.Z` (first tag is `v0.1.0`) |
-| Deploy | that tag | GitHub Pages serves the `$ref` tree (and today’s `bundled.yaml` fetch file) |
+| CI | PR / push on `develop` | format, lint the `$ref` tree (optional temp flatten for lint only), package/`info.version` match, YAML served over HTTP |
+| Release | `workflow_dispatch` | squash `develop` → `main`, tag `vX.Y.Z` (current tag is `v0.1.0`) |
+| Deploy | that tag | GitHub Pages workflow exists; the site is **not** live (HTTP 404). Do **not** enable gym-buddy-openapi Pages in this ticket. The package/tag is not broken. |
