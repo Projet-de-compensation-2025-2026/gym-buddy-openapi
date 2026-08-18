@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+required: [error]
+properties:
+  error:
+    type: object
+    additionalProperties: false
+    required: [code, message]
+    properties:
+      code:
+        type: string
+        enum:
+          - UNAUTHENTICATED
+          - FORBIDDEN
+          - CONFLICT
+          - VALIDATION
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: ./ErrorDetail.yaml

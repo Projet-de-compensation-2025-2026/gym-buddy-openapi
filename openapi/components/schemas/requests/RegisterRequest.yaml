@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+required: [email, handle, password, displayName]
+properties:
+  email:
+    type: string
+    format: email
+    description: Unique case-insensitively (CITEXT).
+  handle:
+    type: string
+    minLength: 1
+    description: Unique public identifier, case-insensitive.
+  password:
+    type: string
+    format: password
+    writeOnly: true
+    minLength: 10
+    description: At least 10 characters; must not equal email or handle. Stored as Argon2id.
+  displayName:
+    type: string
+    minLength: 1
+    description: Profile display name.
