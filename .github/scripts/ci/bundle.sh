@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Produce the single-file OpenAPI 3.1 document consumers generate from.
-# Source of truth is the $ref tree rooted at openapi/openapi.yaml.
+# Keep the checked-in consumer fetch file in sync with the $ref tree.
+# Today's gym-buddy-service generate-sources still GETs openapi/bundled.yaml.
+# Target SoT for new consumers is openapi/openapi.yaml (ticket #47 switches the service).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$root"

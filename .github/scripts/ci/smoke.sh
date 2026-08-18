@@ -16,7 +16,7 @@ check() {
 
 for _ in $(seq 1 40); do
   if check /openapi.yaml && check /bundled.yaml; then
-    echo "SMOKE OK: openapi.yaml and bundled.yaml served over HTTP"
+    echo "SMOKE OK: openapi.yaml (tree) and bundled.yaml (today's service fetch) served over HTTP"
     exit 0
   fi
   sleep 0.25

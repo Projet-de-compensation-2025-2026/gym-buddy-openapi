@@ -3,8 +3,10 @@ info:
   title: Gym Buddy API
   version: 0.1.0
   description: |
-    Canonical HTTP contract. Edit this $ref tree; consumers generate from
-    `bundled.yaml`. Do not treat a running Spring /v3/api-docs as source of truth.
+    Canonical HTTP contract. Edit this $ref tree. Target generators read
+    `openapi/openapi.yaml` on a tagged package checkout. Today's service
+    still fetches `bundled.yaml` until ticket #47. Do not treat a running
+    Spring /v3/api-docs as source of truth.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
