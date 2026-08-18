@@ -9,6 +9,8 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Delete checked-in `openapi/bundled.yaml`. Consumers already generate from the `$ref` tree (`openapi/openapi.yaml` on tag **v0.1.0**). CI may flatten a temp bundle as a lint check; that file is not checked in. Ticket #54.
+
 ## [0.1.0] — 2026-08-18
 
 ### Added
