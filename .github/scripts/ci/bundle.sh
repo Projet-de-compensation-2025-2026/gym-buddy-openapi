@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Resolve the $ref tree into one file. CI uses this as a resolve check only.
-# Do not check the output in. Generators read openapi/openapi.yaml.
+# Keep the checked-in consumer fetch file in sync with the $ref tree.
+# Today's gym-buddy-service generate-sources still GETs openapi/bundled.yaml.
+# Target SoT for new consumers is openapi/openapi.yaml (ticket #47 switches the service).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$root"

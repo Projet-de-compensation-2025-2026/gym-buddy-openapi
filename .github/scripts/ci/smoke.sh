@@ -11,12 +11,12 @@ check() {
   local path="$1"
   local body
   body="$(curl -fsS "http://127.0.0.1:${port}${path}" 2>/dev/null || true)"
-  [[ "$body" == *"Gym Buddy API"* ]] || [[ "$body" == *"operationId"* ]]
+  [[ "$body" == *"Gym Buddy API"* ]]
 }
 
 for _ in $(seq 1 40); do
-  if check /openapi.yaml && check /paths/health.yaml && check /paths/auth.yaml; then
-    echo "SMOKE OK: \$ref tree served over HTTP"
+  if check /openapi.yaml && check /bundled.yaml; then
+    echo "SMOKE OK: openapi.yaml (tree) and bundled.yaml (today's service fetch) served over HTTP"
     exit 0
   fi
   sleep 0.25

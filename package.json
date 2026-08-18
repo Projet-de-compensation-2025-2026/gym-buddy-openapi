@@ -6,8 +6,7 @@
   "private": false,
   "main": "openapi/openapi.yaml",
   "files": [
-    "openapi/**/*.yaml",
-    "!openapi/bundled.yaml"
+    "openapi"
   ],
   "repository": {
     "type": "git",
