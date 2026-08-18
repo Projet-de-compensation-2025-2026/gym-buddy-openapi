@@ -14,5 +14,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Health contract: `GET /health` replaced by unauthenticated `GET /healthz` (liveness) and `GET /readyz` (PostgreSQL + object storage)
+- Split `openapi/openapi.yaml` into a `$ref` tree (paths, entities, requests, responses). Consumers generate from the checked-in bundle `openapi/bundled.yaml` (`info.version` remains `0.1.0`).
+
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi

@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+required: [accessToken]
+properties:
+  accessToken:
+    type: string
+    description: |
+      HS256 access JWT for the Authorization header. 15-minute TTL.
+      Not returned in a cookie and must not be stored in localStorage.
+    examples:
+      - eyJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJhY2Nlc3MifQ.example

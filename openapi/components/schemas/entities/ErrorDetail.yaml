@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+required: [path, issue]
+properties:
+  path:
+    type: string
+  issue:
+    type: string

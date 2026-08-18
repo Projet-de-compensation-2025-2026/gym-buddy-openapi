@@ -1,0 +1,32 @@
+healthz:
+  get:
+    operationId: getHealthz
+    summary: Liveness probe
+    description: Process is up. Unauthenticated. Does not check dependencies.
+    security: []
+    responses:
+      "200":
+        description: Process is up
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/HealthStatus.yaml
+readyz:
+  get:
+    operationId: getReadyz
+    summary: Readiness probe
+    description: PostgreSQL and object storage are reachable. Unauthenticated.
+    security: []
+    responses:
+      "200":
+        description: PostgreSQL and object storage are reachable
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/HealthStatus.yaml
+      "503":
+        description: PostgreSQL or object storage is not reachable
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/HealthStatus.yaml
