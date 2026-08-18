@@ -1,0 +1,14 @@
+bearerAuth:
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: |
+    Access JWT in `Authorization: Bearer <access_token>`. HS256, 15-minute TTL.
+    Claims `sub`, `handle`, `role`, `typ=access`. Not stored in a cookie.
+refreshCookie:
+  type: apiKey
+  in: cookie
+  name: refresh
+  description: |
+    Refresh JWT cookie. HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth.
+    14-day TTL. Claims `sub`, `jti`, `typ=refresh`. Rotated on refresh.

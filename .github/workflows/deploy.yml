@@ -35,7 +35,7 @@ jobs:
           mkdir -p _site
           cp -a openapi/. _site/
           if [[ -f _site/openapi.yaml ]]; then
-            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Gym Buddy API</title><h1>Gym Buddy API</h1><p><a href="openapi.yaml">openapi.yaml</a></p>' > _site/index.html
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Gym Buddy API</title><h1>Gym Buddy API</h1><p>Target generators: <a href="openapi.yaml">openapi.yaml</a> ($ref tree). Pin a git tag such as <code>v0.1.0</code>.</p><p>Today&rsquo;s service fetch file (until #47): <a href="bundled.yaml">bundled.yaml</a>. Not the target source of truth.</p>' > _site/index.html
           fi
 
       - name: Upload Pages artifact

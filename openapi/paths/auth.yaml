@@ -1,0 +1,189 @@
+register:
+  post:
+    operationId: postAuthRegister
+    tags: [Auth]
+    summary: Register a visitor
+    description: |
+      Creates a user (and profile) from email, handle, password, and display name (FS-ACCT-01).
+      Email and handle are unique case-insensitively (FS-ACCT-02).
+      Password must be at least 10 characters and must not equal email or handle (FS-ACCT-03).
+      Stored as Argon2id; never logged. Does not return tokens — the visitor logs in afterwards.
+      The first registered user may receive role `admin` (FS-ACCT-10); later users are `member`.
+    security: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/RegisterRequest.yaml
+          examples:
+            valid:
+              value:
+                email: alex@example.com
+                handle: alex
+                password: a-long-enough-secret
+                displayName: Alex
+    responses:
+      "201":
+        description: User created. No access JWT and no refresh cookie.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/RegisteredUser.yaml
+      "409":
+        description: Duplicate email or handle (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              duplicateEmail:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: email or handle already exists
+                    details:
+                      - path: email
+                        issue: duplicate
+      "422":
+        description: Weak or invalid password, or payload fails schema (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              weakPassword:
+                value:
+                  error:
+                    code: VALIDATION
+                    message: password must be at least 10 characters and must not equal email or handle
+                    details:
+                      - path: password
+                        issue: weak
+login:
+  post:
+    operationId: postAuthLogin
+    tags: [Auth]
+    summary: Sign in
+    description: |
+      Verifies email and password (Argon2id, timing-safe). On success returns an access JWT
+      in the JSON body and a refresh JWT in `Set-Cookie` (FS-ACCT-04).
+      The access token is not set as a cookie. Unknown email and wrong password use the
+      same generic invalid-credentials response. Locked users fail with FORBIDDEN without
+      revealing whether the password was correct.
+    security: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/LoginRequest.yaml
+          examples:
+            valid:
+              value:
+                email: alex@example.com
+                password: a-long-enough-secret
+    responses:
+      "200":
+        description: Access JWT in JSON plus HttpOnly refresh cookie.
+        headers:
+          Set-Cookie:
+            $ref: ../components/headers.yaml#/SetRefreshCookie
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/responses/AccessTokenResponse.yaml
+      "403":
+        description: Locked user, or invalid credentials (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              invalidCredentials:
+                summary: Unknown email or wrong password
+                value:
+                  error:
+                    code: FORBIDDEN
+                    message: invalid credentials
+              locked:
+                summary: Account is locked (password correctness is not revealed)
+                value:
+                  error:
+                    code: FORBIDDEN
+                    message: account is locked
+      "422":
+        description: Payload fails schema (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+refresh:
+  post:
+    operationId: postAuthRefresh
+    tags: [Auth]
+    summary: Rotate refresh and issue a new access token
+    description: |
+      Cookie only — no request body and no access token.
+      Validates the refresh cookie (`typ=refresh`), replaces `jti` (rotation), and returns
+      a new access JWT in JSON plus a new refresh `Set-Cookie`.
+      Locked users fail. Missing, expired, or denylisted refresh fails as UNAUTHENTICATED.
+    security:
+      - refreshCookie: []
+    responses:
+      "200":
+        description: New access JWT in JSON and rotated refresh cookie.
+        headers:
+          Set-Cookie:
+            $ref: ../components/headers.yaml#/SetRefreshCookie
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/responses/AccessTokenResponse.yaml
+      "401":
+        description: Missing, expired, rotated-away, or Redis-denylisted refresh (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              unauthenticated:
+                value:
+                  error:
+                    code: UNAUTHENTICATED
+                    message: refresh credential is missing or no longer valid
+      "403":
+        description: User is locked (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              locked:
+                value:
+                  error:
+                    code: FORBIDDEN
+                    message: account is locked
+logout:
+  post:
+    operationId: postAuthLogout
+    tags: [Auth]
+    summary: Revoke the refresh credential
+    description: |
+      Cookie only. Puts the refresh `jti` on a Redis denylist until that token's `exp`
+      (FS-ACCT-06). Clears the refresh cookie. The access JWT is not revoked server-side
+      (15-minute TTL). A later refresh with the old cookie is UNAUTHENTICATED.
+    security:
+      - refreshCookie: []
+    responses:
+      "204":
+        description: Refresh jti denylisted. Cookie cleared.
+        headers:
+          Set-Cookie:
+            $ref: ../components/headers.yaml#/ClearRefreshCookie
+      "401":
+        description: Missing or invalid refresh cookie (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

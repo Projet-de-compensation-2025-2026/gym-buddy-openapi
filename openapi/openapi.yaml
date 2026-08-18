@@ -2,23 +2,57 @@ openapi: 3.1.0
 info:
   title: Gym Buddy API
   version: 0.1.0
-  description: Canonical HTTP contract. Expand this file; do not treat a running Spring /v3/api-docs as source of truth.
+  description: |
+    Canonical HTTP contract. Edit this $ref tree. Target generators read
+    `openapi/openapi.yaml` on a tagged package checkout. Today's service
+    still fetches `bundled.yaml` until ticket #47. Do not treat a running
+    Spring /v3/api-docs as source of truth.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
   - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+    description: Sign-up, sign-in, refresh, and log-out (FS-ACCT-01..04, FS-ACCT-06).
 paths:
-  /health:
-    get:
-      operationId: getHealth
-      summary: Liveness probe
-      responses:
-        "200":
-          description: Process is up
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [status]
-                properties:
-                  status:
-                    type: string
-                    example: ok
+  /healthz:
+    $ref: ./paths/health.yaml#/healthz
+  /readyz:
+    $ref: ./paths/health.yaml#/readyz
+  /auth/register:
+    $ref: ./paths/auth.yaml#/register
+  /auth/login:
+    $ref: ./paths/auth.yaml#/login
+  /auth/refresh:
+    $ref: ./paths/auth.yaml#/refresh
+  /auth/logout:
+    $ref: ./paths/auth.yaml#/logout
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: ./components/securitySchemes.yaml#/bearerAuth
+    refreshCookie:
+      $ref: ./components/securitySchemes.yaml#/refreshCookie
+  headers:
+    SetRefreshCookie:
+      $ref: ./components/headers.yaml#/SetRefreshCookie
+    ClearRefreshCookie:
+      $ref: ./components/headers.yaml#/ClearRefreshCookie
+  schemas:
+    HealthStatus:
+      $ref: ./components/schemas/entities/HealthStatus.yaml
+    RegisterRequest:
+      $ref: ./components/schemas/requests/RegisterRequest.yaml
+    LoginRequest:
+      $ref: ./components/schemas/requests/LoginRequest.yaml
+    RegisteredUser:
+      $ref: ./components/schemas/entities/RegisteredUser.yaml
+    AccessTokenResponse:
+      $ref: ./components/schemas/responses/AccessTokenResponse.yaml
+    ErrorResponse:
+      $ref: ./components/schemas/entities/ErrorResponse.yaml
+    ErrorDetail:
+      $ref: ./components/schemas/entities/ErrorDetail.yaml
