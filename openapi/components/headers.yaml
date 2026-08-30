@@ -12,4 +12,3 @@ ClearRefreshCookie:
     type: string
     examples:
       - refresh=; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; Max-Age=0
-
