@@ -27,6 +27,8 @@ tags:
     description: Posts, likes, and reposts (FS-POST-01..08).
   - name: Comments
     description: Nested comments on posts (FS-CMT-01..07). Max depth 4 (root = 0).
+  - name: Feed
+    description: Friends news feed of posts and reposts (FS-FEED-01..06).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -84,6 +86,8 @@ paths:
     $ref: ./paths/comments.yaml#/item
   /comments/{id}/like:
     $ref: ./paths/comments.yaml#/like
+  /feed:
+    $ref: ./paths/feed.yaml#/collection
 components:
   securitySchemes:
     bearerAuth:
@@ -150,6 +154,10 @@ components:
       $ref: ./components/schemas/entities/Comment.yaml
     CommentPage:
       $ref: ./components/schemas/entities/CommentPage.yaml
+    FeedItem:
+      $ref: ./components/schemas/entities/FeedItem.yaml
+    FeedPage:
+      $ref: ./components/schemas/entities/FeedPage.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:

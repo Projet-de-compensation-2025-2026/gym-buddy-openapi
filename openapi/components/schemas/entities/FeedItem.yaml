@@ -1,0 +1,24 @@
+type: object
+additionalProperties: false
+required: [id, kind, actor, activityAt, post]
+description: |
+  Friends feed activity (FS-FEED-01..06). `kind` is `post` (authored by the
+  viewer or an accepted friend) or `repost` (they reposted a post the viewer
+  may see). `actor` is the author or the reposter. `activityAt` is the post
+  `createdAt` or the repost `createdAt`. `post` is the original; hidden or
+  deleted originals omit the whole item.
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Post id when `kind=post`; unique repost row id when `kind=repost`.
+  kind:
+    type: string
+    enum: [post, repost]
+  actor:
+    $ref: ./PostAuthor.yaml
+  activityAt:
+    type: string
+    format: date-time
+  post:
+    $ref: ./Post.yaml

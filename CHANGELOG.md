@@ -7,6 +7,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Friends news feed: `GET /feed` (FS-FEED-01..06). Ticket #63. Cursor `before`, default size 20, max 50. Items are posts and reposts by the viewer and accepted friends; public posts from non-friends stay off this feed. Hidden/deleted omitted.
 - Profiles: `GET`/`PATCH /profiles/me`, `GET /profiles/{handle}` (full vs private stub, FS-PROF-01..06). Ticket #59.
 - Password change: `POST /auth/password` (FS-ACCT-05). Ticket #59.
 - Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
