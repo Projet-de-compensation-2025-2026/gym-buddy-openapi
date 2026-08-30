@@ -10,5 +10,6 @@ refreshCookie:
   in: cookie
   name: refresh
   description: |
-    Refresh JWT cookie. HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth.
+    Refresh JWT cookie. HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth.
     14-day TTL. Claims `sub`, `jti`, `typ=refresh`. Rotated on refresh.
+    Access JWT stays in the JSON body / memory, never in this cookie.
