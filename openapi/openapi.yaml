@@ -31,6 +31,8 @@ tags:
     description: Friends news feed of posts and reposts (FS-FEED-01..06).
   - name: Events
     description: Instant and recurring training events, applications, and capacity (FS-EVT-01..13).
+  - name: Search
+    description: Parameterized people and event search (FS-SRCH-01..08).
   - name: Suggestions
     description: Personalized friend suggestions (FS-SUGG-01..07).
   - name: Matching
@@ -112,6 +114,10 @@ paths:
     $ref: ./paths/applications.yaml#/accept
   /applications/{id}/decline:
     $ref: ./paths/applications.yaml#/decline
+  /search/people:
+    $ref: ./paths/search.yaml#/people
+  /search/events:
+    $ref: ./paths/search.yaml#/events
   /suggestions:
     $ref: ./paths/suggestions.yaml#/collection
   /suggestions/{userId}/dismiss:
@@ -242,6 +248,14 @@ components:
       $ref: ./components/schemas/entities/EventApplicant.yaml
     EventPage:
       $ref: ./components/schemas/entities/EventPage.yaml
+    PeopleSearchHit:
+      $ref: ./components/schemas/entities/PeopleSearchHit.yaml
+    PeopleSearchPage:
+      $ref: ./components/schemas/entities/PeopleSearchPage.yaml
+    EventSearchHit:
+      $ref: ./components/schemas/entities/EventSearchHit.yaml
+    EventSearchPage:
+      $ref: ./components/schemas/entities/EventSearchPage.yaml
     Suggestion:
       $ref: ./components/schemas/entities/Suggestion.yaml
     SuggestionPage:

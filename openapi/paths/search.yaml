@@ -1,0 +1,189 @@
+people:
+  get:
+    operationId: getSearchPeople
+    tags: [Search]
+    summary: Search people
+    description: |
+      FS-SRCH-01..08. Authenticated members only. Filters AND across fields;
+      `sports` is ANY inside the field. Private strangers, blocked users, closed
+      accounts, and the caller never appear. Rank is α ts_rank + β recency +
+      γ geo + δ social unless `sort` replaces it. Cursor `before` is opaque
+      (`page.next`). Default size 20, max 50. API radius is kilometres.
+    parameters:
+      - name: q
+        in: query
+        description: Free text on display name, handle, bio, city, and sports. Empty is filters only.
+        schema:
+          type: string
+      - name: sports
+        in: query
+        style: form
+        explode: true
+        description: Any-of sports tags (OR inside the field).
+        schema:
+          type: array
+          items:
+            type: string
+            minLength: 2
+            maxLength: 32
+      - name: experience
+        in: query
+        schema:
+          type: string
+          enum: [beginner, intermediate, advanced]
+      - name: city
+        in: query
+        schema:
+          type: string
+      - name: radiusKm
+        in: query
+        description: 1–50 km. Applied only when the viewer has coordinates.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: friendState
+        in: query
+        schema:
+          type: string
+          enum: [any, not-friends]
+          default: any
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum: [relevance, distance]
+          default: relevance
+      - name: debug
+        in: query
+        description: When true, include `matchReason` on each hit (staff / tests).
+        schema:
+          type: boolean
+          default: false
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of visible people.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/PeopleSearchPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: radiusKm out of 1–50, unknown sort, or size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+events:
+  get:
+    operationId: getSearchEvents
+    tags: [Search]
+    summary: Search events
+    description: |
+      FS-SRCH-01..08. Authenticated members only. Filters AND across fields.
+      Events the caller may not see, hidden content, cancelled series, blocked
+      organizers, and (when `remaining=true`) full events never appear. Rank is
+      α ts_rank + β recency + γ geo + δ social unless `sort` replaces it.
+      Cursor `before` is opaque (`page.next`). Default size 20, max 50. API
+      radius is kilometres.
+    parameters:
+      - name: q
+        in: query
+        description: Free text on title, activity, description, and place. Empty is filters only.
+        schema:
+          type: string
+      - name: activity
+        in: query
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 32
+      - name: from
+        in: query
+        description: Inclusive window start (UTC).
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        description: Inclusive window end (UTC).
+        schema:
+          type: string
+          format: date-time
+      - name: remaining
+        in: query
+        description: When true, omit events with remaining seats = 0.
+        schema:
+          type: boolean
+      - name: radiusKm
+        in: query
+        description: 1–50 km. Applied only when the viewer has coordinates.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: organizerIsFriend
+        in: query
+        description: When true, only events whose organizer is an accepted friend.
+        schema:
+          type: boolean
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum: [relevance, distance, starts_at]
+          default: relevance
+      - name: debug
+        in: query
+        description: When true, include `matchReason` on each hit (staff / tests).
+        schema:
+          type: boolean
+          default: false
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of visible events.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/EventSearchPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: radiusKm out of 1–50, unknown sort, or size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
