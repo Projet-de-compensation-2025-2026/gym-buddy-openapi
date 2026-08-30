@@ -29,6 +29,8 @@ tags:
     description: Nested comments on posts (FS-CMT-01..07). Max depth 4 (root = 0).
   - name: Feed
     description: Friends news feed of posts and reposts (FS-FEED-01..06).
+  - name: Events
+    description: Instant and recurring training events, applications, and capacity (FS-EVT-01..13).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -88,6 +90,20 @@ paths:
     $ref: ./paths/comments.yaml#/like
   /feed:
     $ref: ./paths/feed.yaml#/collection
+  /events:
+    $ref: ./paths/events.yaml#/collection
+  /events/{id}:
+    $ref: ./paths/events.yaml#/item
+  /events/{id}/cancel:
+    $ref: ./paths/events.yaml#/cancel
+  /events/{id}/applications:
+    $ref: ./paths/events.yaml#/apply
+  /applications/{id}:
+    $ref: ./paths/applications.yaml#/item
+  /applications/{id}/accept:
+    $ref: ./paths/applications.yaml#/accept
+  /applications/{id}/decline:
+    $ref: ./paths/applications.yaml#/decline
 components:
   securitySchemes:
     bearerAuth:
@@ -124,6 +140,14 @@ components:
       $ref: ./components/schemas/requests/PatchPostRequest.yaml
     CreateCommentRequest:
       $ref: ./components/schemas/requests/CreateCommentRequest.yaml
+    CreateEventRequest:
+      $ref: ./components/schemas/requests/CreateEventRequest.yaml
+    PatchEventRequest:
+      $ref: ./components/schemas/requests/PatchEventRequest.yaml
+    CreateEventApplicationRequest:
+      $ref: ./components/schemas/requests/CreateEventApplicationRequest.yaml
+    CancelEventRequest:
+      $ref: ./components/schemas/requests/CancelEventRequest.yaml
     CreateMediaResponse:
       $ref: ./components/schemas/responses/CreateMediaResponse.yaml
     MediaUrlResponse:
@@ -158,6 +182,16 @@ components:
       $ref: ./components/schemas/entities/FeedItem.yaml
     FeedPage:
       $ref: ./components/schemas/entities/FeedPage.yaml
+    Event:
+      $ref: ./components/schemas/entities/Event.yaml
+    EventOccurrence:
+      $ref: ./components/schemas/entities/EventOccurrence.yaml
+    EventApplication:
+      $ref: ./components/schemas/entities/EventApplication.yaml
+    EventApplicant:
+      $ref: ./components/schemas/entities/EventApplicant.yaml
+    EventPage:
+      $ref: ./components/schemas/entities/EventPage.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:

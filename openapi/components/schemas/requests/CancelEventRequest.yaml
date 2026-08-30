@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+description: |
+  FS-EVT-08. Organizer only. Omit `occurrenceId` to cancel the series. Set it
+  to cancel one occurrence. Pending and accepted applications on cancelled
+  occurrences become `cancelled`. No Notifications product.
+properties:
+  occurrenceId:
+    type: [string, "null"]
+    format: uuid

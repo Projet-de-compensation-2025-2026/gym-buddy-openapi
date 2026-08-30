@@ -42,7 +42,7 @@ Ticket **#54** deletes the former checked-in `openapi/bundled.yaml`. It is **not
 | --- | --- |
 | `package.json` | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`. |
 | `openapi/openapi.yaml` | Thin root. **Edit source and generator entry.** |
-| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`) |
+| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`, `feed`, `events`, `applications`) |
 | `openapi/components/schemas/entities/` | Shared entities (`HealthStatus`, `RegisteredUser`, `Profile`, `ErrorResponse`, …) |
 | `openapi/components/schemas/requests/` | Request bodies (`RegisterRequest`, `LoginRequest`, `CreatePostRequest`, `PatchPostRequest`, …) |
 | `openapi/components/schemas/responses/` | Response bodies (`AccessTokenResponse`, `CreateMediaResponse`, `MediaUrlResponse`) |
@@ -64,6 +64,9 @@ Server prefix `/api/v1`:
 - `POST /media`, `GET /media/{id}/url`, `DELETE /media/{id}`
 - `POST /posts`, `GET`/`PATCH`/`DELETE /posts/{id}`, `POST`/`DELETE /posts/{id}/reposts`, `PUT`/`DELETE /posts/{id}/like`, `GET /posts/{id}/likes`
 - `GET`/`POST /posts/{id}/comments`, `GET /comments/{id}/replies`, `DELETE /comments/{id}`, `PUT`/`DELETE /comments/{id}/like`
+- `GET /feed`
+- `GET`/`POST /events`, `GET`/`PATCH /events/{id}`, `POST /events/{id}/cancel`, `POST /events/{id}/applications`
+- `DELETE /applications/{id}`, `POST /applications/{id}/accept`, `POST /applications/{id}/decline`
 
 ## Pipeline
 

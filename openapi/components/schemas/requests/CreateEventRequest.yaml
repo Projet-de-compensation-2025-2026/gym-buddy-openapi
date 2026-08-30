@@ -1,0 +1,71 @@
+type: object
+additionalProperties: false
+required: [title, activity, place, startsAt, durationMin, visibility, capacity]
+description: |
+  FS-EVT-01..04. Create rejects `startsAt` in the past (VALIDATION). Instant
+  when `recurrence` is omitted or empty. Recurring MVP is `FREQ=WEEKLY` with
+  `BYDAY` and optional `UNTIL`. Capacity 1–100 excluding the organizer.
+  Private events are invite-only (`inviteeIds`); invitees still apply and the
+  organizer still accepts.
+properties:
+  title:
+    type: string
+    minLength: 1
+    maxLength: 120
+  description:
+    type: [string, "null"]
+    maxLength: 2000
+  activity:
+    type: string
+    minLength: 2
+    maxLength: 32
+  place:
+    type: string
+    minLength: 1
+    maxLength: 200
+  lat:
+    type: [number, "null"]
+    format: double
+    minimum: -90
+    maximum: 90
+  lng:
+    type: [number, "null"]
+    format: double
+    minimum: -180
+    maximum: 180
+  startsAt:
+    type: string
+    format: date-time
+  durationMin:
+    type: integer
+    minimum: 1
+    maximum: 1440
+  visibility:
+    type: string
+    enum: [public, friends, private]
+  capacity:
+    type: integer
+    minimum: 1
+    maximum: 100
+  recurrence:
+    type: [string, "null"]
+    description: RFC 5545 RRULE. Empty/null is instant.
+    examples:
+      - FREQ=WEEKLY;BYDAY=TU
+  tags:
+    type: array
+    maxItems: 8
+    items:
+      type: string
+      minLength: 1
+      maxLength: 32
+  coverMediaId:
+    type: [string, "null"]
+    format: uuid
+    description: Optional ready `kind=event` image owned by the caller.
+  inviteeIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: Private visibility. Members who may view and apply.

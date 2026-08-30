@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+required: [id, eventId, occurrenceId, applicant, status, createdAt]
+description: |
+  Application to one occurrence (FS-EVT-05..11). Instant events use the single
+  occurrence id. Status `cancelled` is the in-app cancel signal (no Notifications
+  product).
+properties:
+  id:
+    type: string
+    format: uuid
+  eventId:
+    type: string
+    format: uuid
+  occurrenceId:
+    type: string
+    format: uuid
+  applicant:
+    $ref: ./PostAuthor.yaml
+  status:
+    type: string
+    enum: [pending, accepted, declined, cancelled, withdrawn]
+  createdAt:
+    type: string
+    format: date-time
+  respondedAt:
+    type: [string, "null"]
+    format: date-time

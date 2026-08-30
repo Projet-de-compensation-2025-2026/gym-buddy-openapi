@@ -1,0 +1,12 @@
+type: object
+additionalProperties: false
+description: |
+  FS-EVT-05. Apply once per occurrence. Instant events may omit `occurrenceId`
+  (the single occurrence is used). Recurring events require `occurrenceId`.
+  Organizer applying to their own event is FORBIDDEN. Past occurrence is
+  VALIDATION. Double apply is CONFLICT. Stranger on friends-only or private
+  is NOT_FOUND.
+properties:
+  occurrenceId:
+    type: [string, "null"]
+    format: uuid
