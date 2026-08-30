@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Top-k friend suggestions for the caller (FS-SUGG-01). Ranked by the
+  two-stage generate-and-score algorithm. `page.next` is always null
+  (no cursor; this is a scored top-k, not a feed).
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Suggestion.yaml
+  page:
+    $ref: ./Page.yaml

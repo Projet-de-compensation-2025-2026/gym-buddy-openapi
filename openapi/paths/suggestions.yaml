@@ -1,0 +1,70 @@
+collection:
+  get:
+    operationId: getSuggestions
+    tags: [Suggestions]
+    summary: Personalized friend suggestions
+    description: |
+      FS-SUGG-01..03, FS-SUGG-06, FS-SUGG-07. Two-stage generate-and-score
+      (friends-of-friends ∪ same city∩sport ∪ co-participants last 90 days).
+      Forbidden set: self, friends, pending, blocked, dismissed-30d,
+      locked/closed. Each item has a plain-language `reason`. Default size 20,
+      max 50. Cache older than 48 h is not served; fall back to on-the-fly
+      top-k. Co-participants are an empty set when the events table is absent.
+    parameters:
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Ranked suggestions for the caller.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/SuggestionPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+dismiss:
+  parameters:
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postSuggestionsUserIdDismiss
+    tags: [Suggestions]
+    summary: Dismiss a suggestion for 30 days
+    description: |
+      FS-SUGG-04. Suppresses this candidate for the caller until 30 days from
+      now. Unknown, self, locked, or closed is NOT_FOUND. Repeat dismiss
+      refreshes `until`.
+    responses:
+      "204":
+        description: Dismissed (or already dismissed; `until` refreshed).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, self, locked, or closed candidate (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

@@ -1,0 +1,25 @@
+type: object
+additionalProperties: false
+required: [userId, handle, displayName]
+description: The other member on this week's proposed buddy pair (FS-MATCH-02).
+properties:
+  userId:
+    type: string
+    format: uuid
+  handle:
+    type: string
+    minLength: 1
+  displayName:
+    type: string
+  sports:
+    type: array
+    maxItems: 12
+    items:
+      type: string
+      minLength: 2
+      maxLength: 32
+  city:
+    type: [string, "null"]
+  avatarMediaId:
+    type: [string, "null"]
+    format: uuid

@@ -42,7 +42,7 @@ Ticket **#54** deletes the former checked-in `openapi/bundled.yaml`. It is **not
 | --- | --- |
 | `package.json` | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`. |
 | `openapi/openapi.yaml` | Thin root. **Edit source and generator entry.** |
-| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`, `feed`, `events`, `applications`) |
+| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`, `feed`, `events`, `applications`, `suggestions`, `matching`) |
 | `openapi/components/schemas/entities/` | Shared entities (`HealthStatus`, `RegisteredUser`, `Profile`, `ErrorResponse`, …) |
 | `openapi/components/schemas/requests/` | Request bodies (`RegisterRequest`, `LoginRequest`, `CreatePostRequest`, `PatchPostRequest`, …) |
 | `openapi/components/schemas/responses/` | Response bodies (`AccessTokenResponse`, `CreateMediaResponse`, `MediaUrlResponse`) |
@@ -67,6 +67,8 @@ Server prefix `/api/v1`:
 - `GET /feed`
 - `GET`/`POST /events`, `GET`/`PATCH /events/{id}`, `POST /events/{id}/cancel`, `POST /events/{id}/applications`
 - `DELETE /applications/{id}`, `POST /applications/{id}/accept`, `POST /applications/{id}/decline`
+- `GET /suggestions`, `POST /suggestions/{userId}/dismiss`
+- `POST`/`DELETE /matching/opt-in`, `GET /matching/me`
 
 ## Pipeline
 

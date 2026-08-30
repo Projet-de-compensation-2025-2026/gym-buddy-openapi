@@ -1,0 +1,20 @@
+type: object
+additionalProperties: false
+required: [optedIn, weekStart]
+description: |
+  Caller's weekly matching state (FS-MATCH-01..03). `pair` and `event` are
+  present after the greedy job assigns this member; both are omitted (or
+  null) when unmatched. Opt-in is per ISO week starting Monday UTC.
+properties:
+  optedIn:
+    type: boolean
+  weekStart:
+    type: string
+    format: date
+    description: Monday of the current ISO week (UTC).
+  pair:
+    $ref: ./MatchingPeer.yaml
+    description: Present after the greedy job assigns this member this week.
+  event:
+    $ref: ./MatchingDraftEvent.yaml
+    description: Draft instant session for the pair. Omitted when unmatched.
