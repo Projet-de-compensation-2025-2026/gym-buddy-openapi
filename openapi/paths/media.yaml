@@ -1,0 +1,136 @@
+collection:
+  post:
+    operationId: postMedia
+    tags: [Media]
+    summary: Start a media upload
+    description: |
+      FS-MED-02, FS-MED-03, FS-MED-04, FS-MED-05. Creates a `pending` media
+      row and a short-lived signed PUT URL. Bytes go to object storage, never
+      a public `/uploads` directory on the API (FS-MED-01). Per-user quota is
+      1 GiB (`QUOTA_EXCEEDED`). Over 8 MiB is `PAYLOAD_TOO_LARGE`. Audio is
+      message-only. Orphan pending rows older than 1 h are deleted.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateMediaRequest.yaml
+          examples:
+            avatar:
+              value:
+                kind: avatar
+                mime: image/jpeg
+                bytes: 240000
+    responses:
+      "201":
+        description: Pending media row and signed PUT URL.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/responses/CreateMediaResponse.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Per-user quota exceeded (QUOTA_EXCEEDED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              quota:
+                value:
+                  error:
+                    code: QUOTA_EXCEEDED
+                    message: storage quota exceeded
+      "413":
+        description: Declared size over 8 MiB (PAYLOAD_TOO_LARGE).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Bad kind/mime pairing or invalid payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+url:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getMediaIdUrl
+    tags: [Media]
+    summary: Mint a short-lived download URL
+    description: |
+      FS-MED-06, FS-MED-07. Runs canRead then returns a 60 s signed GET.
+      Status must be `ready`. Deny and missing both NOT_FOUND. Staff may
+      inspect in back-office; members need parent visibility (avatar if
+      profile visible, post if post visible, message if conversation member).
+    responses:
+      "200":
+        description: Signed GET URL.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/responses/MediaUrlResponse.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, not ready, or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteMediaId
+    tags: [Media]
+    summary: Soft-delete media
+    description: |
+      FS-MED-08. Owner only. Other callers get NOT_FOUND. Existing signed
+      URLs fail after expiry. The object is scheduled for deletion (grace
+      7 days).
+    responses:
+      "204":
+        description: Media marked for deletion.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the owner (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
