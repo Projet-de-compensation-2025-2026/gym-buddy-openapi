@@ -9,6 +9,8 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- CI accepts `package.json` / `info.version` **1.y.z** now that tag **v1.0.0** exists. It still rejects 2.0.0+.
+
 ## [1.0.0] — 2026-08-30
 
 ### Added
