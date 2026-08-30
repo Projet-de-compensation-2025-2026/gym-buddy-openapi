@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of audit events (FS-ADM-06). Newest first. `page.next` is
+  opaque; pass it as `after` for the next page. Admins see the full log.
+  Moderators see their own rows plus content hide/unhide.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./AuditEvent.yaml
+  page:
+    $ref: ./Page.yaml

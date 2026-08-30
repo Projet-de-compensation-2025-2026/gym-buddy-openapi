@@ -35,6 +35,10 @@ tags:
     description: Personalized friend suggestions (FS-SUGG-01..07).
   - name: Matching
     description: Weekly buddy matching opt-in and proposed pair (FS-MATCH-01..03).
+  - name: Admin
+    description: Staff back-office (FS-ADM-01..09, FS-ACCT-08/09). Members get NOT_FOUND.
+  - name: Reports
+    description: Member reports of users, posts, comments, or events (FS-ADM-07).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -116,6 +120,32 @@ paths:
     $ref: ./paths/matching.yaml#/optIn
   /matching/me:
     $ref: ./paths/matching.yaml#/me
+  /admin/users:
+    $ref: ./paths/admin-users.yaml#/collection
+  /admin/users/{id}/lock:
+    $ref: ./paths/admin-users.yaml#/lock
+  /admin/users/{id}/unlock:
+    $ref: ./paths/admin-users.yaml#/unlock
+  /admin/users/{id}/role:
+    $ref: ./paths/admin-users.yaml#/role
+  /admin/content/{type}/{id}/hide:
+    $ref: ./paths/admin-content.yaml#/hide
+  /admin/content/{type}/{id}/unhide:
+    $ref: ./paths/admin-content.yaml#/unhide
+  /admin/reports:
+    $ref: ./paths/admin-reports.yaml#/collection
+  /admin/reports/{id}/resolve:
+    $ref: ./paths/admin-reports.yaml#/resolve
+  /reports:
+    $ref: ./paths/reports.yaml#/collection
+  /admin/media:
+    $ref: ./paths/admin-media.yaml#/collection
+  /admin/fixtures:
+    $ref: ./paths/admin-fixtures.yaml#/generate
+  /admin/fixtures/reset:
+    $ref: ./paths/admin-fixtures.yaml#/reset
+  /admin/audit:
+    $ref: ./paths/admin-audit.yaml#/collection
 components:
   securitySchemes:
     bearerAuth:
@@ -160,6 +190,14 @@ components:
       $ref: ./components/schemas/requests/CreateEventApplicationRequest.yaml
     CancelEventRequest:
       $ref: ./components/schemas/requests/CancelEventRequest.yaml
+    HideContentRequest:
+      $ref: ./components/schemas/requests/HideContentRequest.yaml
+    StaffReasonRequest:
+      $ref: ./components/schemas/requests/StaffReasonRequest.yaml
+    PatchUserRoleRequest:
+      $ref: ./components/schemas/requests/PatchUserRoleRequest.yaml
+    CreateReportRequest:
+      $ref: ./components/schemas/requests/CreateReportRequest.yaml
     CreateMediaResponse:
       $ref: ./components/schemas/responses/CreateMediaResponse.yaml
     MediaUrlResponse:
@@ -214,6 +252,22 @@ components:
       $ref: ./components/schemas/entities/MatchingDraftEvent.yaml
     MatchingMe:
       $ref: ./components/schemas/entities/MatchingMe.yaml
+    AdminUser:
+      $ref: ./components/schemas/entities/AdminUser.yaml
+    AdminUserPage:
+      $ref: ./components/schemas/entities/AdminUserPage.yaml
+    Report:
+      $ref: ./components/schemas/entities/Report.yaml
+    ReportPage:
+      $ref: ./components/schemas/entities/ReportPage.yaml
+    AuditEvent:
+      $ref: ./components/schemas/entities/AuditEvent.yaml
+    AuditEventPage:
+      $ref: ./components/schemas/entities/AuditEventPage.yaml
+    AdminMedia:
+      $ref: ./components/schemas/entities/AdminMedia.yaml
+    AdminMediaPage:
+      $ref: ./components/schemas/entities/AdminMediaPage.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:

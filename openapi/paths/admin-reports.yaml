@@ -1,0 +1,99 @@
+collection:
+  get:
+    operationId: getAdminReports
+    tags: [Admin]
+    summary: List member reports
+    description: |
+      FS-ADM-07. Staff. Default `status=open`. Members get NOT_FOUND. Cursor
+      `after` is opaque (`page.next`). Default size 20, max 50.
+    parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [open, resolved]
+          default: open
+      - name: q
+        in: query
+        description: Search reporter handle or reason.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of reports.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ReportPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+resolve:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postAdminReportsIdResolve
+    tags: [Admin]
+    summary: Close a report
+    description: |
+      FS-ADM-07. Staff. Sets `status=resolved`. Members get NOT_FOUND.
+      Writes `audit_events`. Idempotent if already resolved.
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/StaffReasonRequest.yaml
+    responses:
+      "200":
+        description: Report resolved.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Report.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

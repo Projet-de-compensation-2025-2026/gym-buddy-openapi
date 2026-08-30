@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of reports (FS-ADM-07). Newest first. `page.next` is opaque;
+  pass it as `after` for the next page.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Report.yaml
+  page:
+    $ref: ./Page.yaml

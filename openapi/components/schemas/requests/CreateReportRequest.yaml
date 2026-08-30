@@ -1,0 +1,18 @@
+type: object
+additionalProperties: false
+required: [targetType, targetId, reason]
+description: |
+  FS-ADM-07. Authenticated member. Unknown or not-visible target is
+  NOT_FOUND (no existence leak). Duplicate open report by the same reporter
+  on the same target is CONFLICT.
+properties:
+  targetType:
+    type: string
+    enum: [user, post, comment, event]
+  targetId:
+    type: string
+    format: uuid
+  reason:
+    type: string
+    minLength: 1
+    maxLength: 1000

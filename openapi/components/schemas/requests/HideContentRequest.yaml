@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+required: [reason]
+description: |
+  FS-ADM-03. Hide reason is required (VALIDATION when missing or blank).
+  Staff still see the row; members see NOT_FOUND.
+properties:
+  reason:
+    type: string
+    minLength: 1
+    maxLength: 1000

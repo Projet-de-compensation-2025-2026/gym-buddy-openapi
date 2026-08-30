@@ -1,0 +1,48 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - ownerId
+  - ownerHandle
+  - kind
+  - mime
+  - bytes
+  - status
+  - objectKey
+  - createdAt
+  - hidden
+description: |
+  Staff view of a media row (FS-MED, FS-ADM). Members never receive this
+  shape. Hide via `POST /admin/content/media/{id}/hide` revokes signed GET
+  after expiry (members see NOT_FOUND).
+properties:
+  id:
+    type: string
+    format: uuid
+  ownerId:
+    type: string
+    format: uuid
+  ownerHandle:
+    type: string
+  kind:
+    type: string
+    enum: [avatar, post, message, event]
+  mime:
+    type: string
+  bytes:
+    type: integer
+    format: int64
+    minimum: 1
+  status:
+    type: string
+    enum: [pending, ready, rejected, deleted]
+  objectKey:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  hidden:
+    type: boolean
+  hiddenReason:
+    type: [string, "null"]
+    maxLength: 1000
