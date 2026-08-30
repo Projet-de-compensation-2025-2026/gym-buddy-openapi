@@ -1,0 +1,44 @@
+collection:
+  get:
+    operationId: getFeed
+    tags: [Feed]
+    summary: Friends news feed
+    description: |
+      FS-FEED-01..06. Posts authored by the viewer and by accepted friends,
+      plus reposts they made of posts the viewer may see. Reverse chronological
+      on activity time (post `createdAt` or repost `createdAt`). Cursor `before`
+      is opaque (`page.next`). Default size 20, max 50. Hidden and deleted
+      posts (and reposts of those) are omitted with no placeholder. Public
+      posts from non-friends do not enter this feed.
+    parameters:
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of feed items.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/FeedPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
