@@ -7,6 +7,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Friend suggestions and weekly matching: `GET /suggestions`, `POST /suggestions/{userId}/dismiss`, `POST`/`DELETE /matching/opt-in`, `GET /matching/me` (FS-SUGG-01..07, FS-MATCH-01..03). Ticket #66. Default size 20, max 50. Each suggestion has a plain-language `reason`. Dismiss is 30 days. Matching opt-in is per ISO week; `GET /matching/me` returns the proposed pair and draft instant event (capacity 1, visibility friends) when assigned.
 - Events: `GET`/`POST /events`, `GET`/`PATCH /events/{id}`, `POST /events/{id}/cancel`, `POST /events/{id}/applications`, `DELETE /applications/{id}`, `POST /applications/{id}/accept`, `POST /applications/{id}/decline` (FS-EVT-01..13). Ticket #64. Instant or `FREQ=WEEKLY;BYDAY` (+ optional `UNTIL`). Visibility public / friends / private. Capacity 1–100 excluding organizer. 90-day materialised occurrences. Transactional last-seat accept is `CONFLICT`. Organizer pending applicants include matching score (FS-EVT-13).
 - Friends news feed: `GET /feed` (FS-FEED-01..06). Ticket #63. Cursor `before`, default size 20, max 50. Items are posts and reposts by the viewer and accepted friends; public posts from non-friends stay off this feed. Hidden/deleted omitted.
 - Profiles: `GET`/`PATCH /profiles/me`, `GET /profiles/{handle}` (full vs private stub, FS-PROF-01..06). Ticket #59.

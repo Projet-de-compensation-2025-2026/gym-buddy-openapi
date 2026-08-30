@@ -31,6 +31,10 @@ tags:
     description: Friends news feed of posts and reposts (FS-FEED-01..06).
   - name: Events
     description: Instant and recurring training events, applications, and capacity (FS-EVT-01..13).
+  - name: Suggestions
+    description: Personalized friend suggestions (FS-SUGG-01..07).
+  - name: Matching
+    description: Weekly buddy matching opt-in and proposed pair (FS-MATCH-01..03).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -104,6 +108,14 @@ paths:
     $ref: ./paths/applications.yaml#/accept
   /applications/{id}/decline:
     $ref: ./paths/applications.yaml#/decline
+  /suggestions:
+    $ref: ./paths/suggestions.yaml#/collection
+  /suggestions/{userId}/dismiss:
+    $ref: ./paths/suggestions.yaml#/dismiss
+  /matching/opt-in:
+    $ref: ./paths/matching.yaml#/optIn
+  /matching/me:
+    $ref: ./paths/matching.yaml#/me
 components:
   securitySchemes:
     bearerAuth:
@@ -192,6 +204,16 @@ components:
       $ref: ./components/schemas/entities/EventApplicant.yaml
     EventPage:
       $ref: ./components/schemas/entities/EventPage.yaml
+    Suggestion:
+      $ref: ./components/schemas/entities/Suggestion.yaml
+    SuggestionPage:
+      $ref: ./components/schemas/entities/SuggestionPage.yaml
+    MatchingPeer:
+      $ref: ./components/schemas/entities/MatchingPeer.yaml
+    MatchingDraftEvent:
+      $ref: ./components/schemas/entities/MatchingDraftEvent.yaml
+    MatchingMe:
+      $ref: ./components/schemas/entities/MatchingMe.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:
