@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+required: [role]
+description: |
+  FS-ACCT-09, FS-ADM-02. Admin only. Last remaining admin cannot be demoted
+  (CONFLICT). Moderators calling this path get FORBIDDEN.
+properties:
+  role:
+    type: string
+    enum: [member, moderator, admin]
+  reason:
+    type: string
+    minLength: 1
+    maxLength: 1000

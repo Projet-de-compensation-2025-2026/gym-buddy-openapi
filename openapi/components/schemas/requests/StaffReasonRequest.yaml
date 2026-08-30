@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+description: |
+  Optional staff reason written to `audit_events` (FS-ADM-06). Used for
+  lock, unhide, and resolve. Hide uses HideContentRequest (reason required).
+properties:
+  reason:
+    type: string
+    minLength: 1
+    maxLength: 1000

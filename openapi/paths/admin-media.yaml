@@ -1,0 +1,55 @@
+collection:
+  get:
+    operationId: getAdminMedia
+    tags: [Admin]
+    summary: List media for staff
+    description: |
+      FS-MED, FS-ADM. Staff. Inspect object keys, owner, kind, status, and
+      hidden flag. Members get NOT_FOUND. Hide via
+      `POST /admin/content/media/{id}/hide`. Cursor `after` is opaque
+      (`page.next`). Default size 20, max 50.
+    parameters:
+      - name: q
+        in: query
+        description: Search media id, owner handle, or object key.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of media rows.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminMediaPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

@@ -1,0 +1,211 @@
+collection:
+  get:
+    operationId: getAdminUsers
+    tags: [Admin]
+    summary: List accounts for staff
+    description: |
+      FS-ADM, FS-ACCT-08/09. Staff only (`moderator` or `admin`). Search
+      `q` matches handle, email, or display name (case-insensitive). Members
+      get NOT_FOUND (do not advertise staff routes). Cursor `after` is opaque
+      (`page.next`). Default size 20, max 50.
+    parameters:
+      - name: q
+        in: query
+        description: Search handle, email, or display name.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - name: role
+        in: query
+        schema:
+          type: string
+          enum: [member, moderator, admin]
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [active, locked, pending_verification, closed]
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of accounts.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminUserPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+lock:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postAdminUsersIdLock
+    tags: [Admin]
+    summary: Lock an account
+    description: |
+      FS-ACCT-08, FS-ADM-04. Staff. Locked users cannot authenticate
+      (generic FORBIDDEN). Last remaining admin cannot lock themselves
+      (CONFLICT). Members get NOT_FOUND. Writes `audit_events`.
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/StaffReasonRequest.yaml
+    responses:
+      "200":
+        description: Account locked.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminUser.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Last admin cannot lock themselves (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+unlock:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postAdminUsersIdUnlock
+    tags: [Admin]
+    summary: Unlock an account
+    description: |
+      FS-ACCT-08. Staff. Sets `users.status=active`. Also restores `closed`.
+      Members get NOT_FOUND. Writes `audit_events`.
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/StaffReasonRequest.yaml
+    responses:
+      "200":
+        description: Account unlocked (active).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminUser.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+role:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  patch:
+    operationId: patchAdminUsersIdRole
+    tags: [Admin]
+    summary: Change an account role
+    description: |
+      FS-ACCT-09, FS-ADM-02. Admin only. Moderators get FORBIDDEN. Last
+      remaining admin cannot be demoted (CONFLICT). Members get NOT_FOUND.
+      Writes `audit_events`.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/PatchUserRoleRequest.yaml
+    responses:
+      "200":
+        description: Role updated.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminUser.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Caller is a moderator (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Last admin cannot be demoted (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Invalid role (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

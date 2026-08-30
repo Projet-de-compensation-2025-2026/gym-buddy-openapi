@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of accounts for the back-office (FS-ADM). Newest first.
+  `page.next` is opaque; pass it as `after` for the next page.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./AdminUser.yaml
+  page:
+    $ref: ./Page.yaml

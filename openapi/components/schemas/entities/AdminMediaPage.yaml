@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of media for the back-office (FS-ADM, FS-MED). Newest first.
+  `page.next` is opaque; pass it as `after` for the next page.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./AdminMedia.yaml
+  page:
+    $ref: ./Page.yaml

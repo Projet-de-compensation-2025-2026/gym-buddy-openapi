@@ -1,0 +1,63 @@
+generate:
+  post:
+    operationId: postAdminFixtures
+    tags: [Admin]
+    summary: Trigger fixture generation
+    description: |
+      FS-ADM-05. Admin only. Disabled on the `prod` Spring profile
+      (FORBIDDEN). Moderators get FORBIDDEN. Members get NOT_FOUND. Generating
+      thousands of rows is ticket #70; this operation records the trigger
+      (audit row) and may no-op until that ticket. Writes `audit_events`.
+    responses:
+      "204":
+        description: Trigger accepted (stub may no-op until #70).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Caller is not admin, or Spring profile is prod (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+reset:
+  post:
+    operationId: postAdminFixturesReset
+    tags: [Admin]
+    summary: Trigger fixture reset
+    description: |
+      FS-ADM-05. Admin only, non-`prod`, `--reset` equivalent. Disabled on
+      the `prod` Spring profile (FORBIDDEN). Moderators get FORBIDDEN.
+      Members get NOT_FOUND. Truncating thousands of rows is ticket #70;
+      this operation records the trigger (audit row) and may no-op until
+      that ticket. Writes `audit_events`.
+    responses:
+      "204":
+        description: Trigger accepted (stub may no-op until #70).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Caller is not admin, or Spring profile is prod (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
