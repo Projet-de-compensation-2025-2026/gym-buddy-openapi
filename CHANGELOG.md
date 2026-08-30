@@ -12,6 +12,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
 - Friendships and blocks: `GET`/`POST /friendships`, accept/decline/delete, `POST /blocks`, `DELETE /blocks/{userId}` (FS-FRND-01..08). Ticket #60.
 - Media: `POST /media`, `GET /media/{id}/url`, `DELETE /media/{id}` (FS-MED-01..09). Ticket #68. Error codes `PAYLOAD_TOO_LARGE` and `QUOTA_EXCEEDED`.
+- Nested comments: `GET`/`POST /posts/{id}/comments`, `GET /comments/{id}/replies`, `DELETE /comments/{id}`, `PUT`/`DELETE /comments/{id}/like` (FS-CMT-01..07). Ticket #62. Max depth 4 (root = 0). Author delete tombstones the body; children remain. Page roots (20) + expand replies. No media in comments. Idempotent like.
 - Posts, likes, and reposts: `POST /posts`, `GET`/`PATCH`/`DELETE /posts/{id}`, `POST`/`DELETE /posts/{id}/reposts`, `PUT`/`DELETE /posts/{id}/like`, `GET /posts/{id}/likes` (FS-POST-01..08). Ticket #61. Visibility `friends` (default) or `public`. Edit window 15 minutes. Soft-delete. Idempotent like. Unique repost. Max 4 image `mediaIds`.
 - `ErrorResponse` code `NOT_FOUND` for unknown or closed handles.
 
@@ -35,5 +36,4 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Package consumers pin a git tag and generate from `openapi/openapi.yaml` (the `$ref` tree). That is the target SoT. `openapi/bundled.yaml` stays checked in as today’s `gym-buddy-service` fetch file until ticket #47. Pin a tag, not a raw `develop` SHA.
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi
-
 [0.1.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v0.1.0

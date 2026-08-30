@@ -1,0 +1,246 @@
+onPost:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getPostsIdComments
+    tags: [Comments]
+    summary: List root comments on a post
+    description: |
+      FS-CMT-06. Page of root comments (`parentId` null), newest first, default
+      size 20. Load replies on demand via GET /comments/{id}/replies. Caller
+      must `canView` the post. Hidden, deleted, unknown, or not visible is
+      NOT_FOUND.
+    parameters:
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of root comments.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/CommentPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible post (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  post:
+    operationId: postPostsIdComments
+    tags: [Comments]
+    summary: Comment on a visible post
+    description: |
+      FS-CMT-01, FS-CMT-02, FS-CMT-03, FS-CMT-04. Authenticated member who can
+      view the post. Body 1–1000 characters. No media. Omit `parentId` for a
+      root (`depth` 0). Set `parentId` to reply (`depth = parent.depth + 1`).
+      A reply beyond depth 4 is VALIDATION. Unknown or not-visible post or
+      parent is NOT_FOUND.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateCommentRequest.yaml
+          examples:
+            root:
+              value:
+                body: Huge milestone! Congrats! Were you using knee sleeves or going raw?
+            reply:
+              value:
+                body: Which brand sleeves do you recommend?
+                parentId: 00000000-0000-4000-8000-0000000000c1
+    responses:
+      "201":
+        description: Comment created.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Comment.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible post or parent (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Empty or too-long body, or reply past depth 4 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+replies:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getCommentsIdReplies
+    tags: [Comments]
+    summary: List direct replies to a comment
+    description: |
+      FS-CMT-06. Page of direct children, oldest first, default size 20. Does
+      not recurse. Caller must `canView` the parent post. Unknown, not visible,
+      or parent post inaccessible is NOT_FOUND. Tombstoned parents still return
+      children.
+    parameters:
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of direct replies.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/CommentPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown comment, or parent post not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteCommentsId
+    tags: [Comments]
+    summary: Tombstone a comment
+    description: |
+      FS-CMT-05. Author only. Replaces the body with `comment deleted` and sets
+      `deleted`. Children remain. Not the author is FORBIDDEN. Unknown id or
+      parent post not visible is NOT_FOUND.
+    responses:
+      "204":
+        description: Comment tombstoned.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Caller is not the author (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown comment, or parent post not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+like:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  put:
+    operationId: putCommentsIdLike
+    tags: [Comments]
+    summary: Like a visible comment
+    description: |
+      FS-CMT-07, FS-POST-07. Unique `(user_id, target_type=comment, target_id)`.
+      A second PUT does not double-count. Caller must `canView` the parent post.
+      Unknown or not visible is NOT_FOUND.
+    responses:
+      "204":
+        description: Like present (inserted or already existed).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown comment, or parent post not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  delete:
+    operationId: deleteCommentsIdLike
+    tags: [Comments]
+    summary: Unlike a comment
+    description: |
+      FS-CMT-07, FS-POST-07. Removes the like row if present. Not visible is
+      NOT_FOUND.
+    responses:
+      "204":
+        description: Like absent.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown comment, or parent post not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
