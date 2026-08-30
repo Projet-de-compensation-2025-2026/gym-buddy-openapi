@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of comments (FS-CMT-06). Roots are newest first. Direct replies
+  are oldest first. `page.next` is opaque; pass it as `before` for the next page.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Comment.yaml
+  page:
+    $ref: ./Page.yaml

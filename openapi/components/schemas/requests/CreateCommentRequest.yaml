@@ -1,0 +1,16 @@
+type: object
+additionalProperties: false
+required: [body]
+description: |
+  FS-CMT-01, FS-CMT-02, FS-CMT-04. Body is 1–1000 characters. No media at MVP.
+  Omit `parentId` (or send null) for a root comment. Set `parentId` to reply.
+  A reply that would exceed depth 4 is VALIDATION. Unknown or not-visible
+  post/parent is NOT_FOUND.
+properties:
+  body:
+    type: string
+    minLength: 1
+    maxLength: 1000
+  parentId:
+    type: [string, "null"]
+    format: uuid

@@ -1,0 +1,57 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - postId
+  - author
+  - body
+  - depth
+  - createdAt
+  - deleted
+  - likeCount
+  - liked
+  - replyCount
+description: |
+  Nested comment on a post (FS-CMT-01..07). Root comments omit `parentId`
+  (`depth` 0). A reply stores `depth = parent.depth + 1`. Maximum depth is 4
+  (root = 0). Author delete tombstones `body` as `comment deleted` and sets
+  `deleted`; children remain. Hidden comments also tombstone. No media at MVP.
+properties:
+  id:
+    type: string
+    format: uuid
+  postId:
+    type: string
+    format: uuid
+  parentId:
+    type: [string, "null"]
+    format: uuid
+  author:
+    $ref: ./PostAuthor.yaml
+  body:
+    type: string
+    minLength: 1
+    maxLength: 1000
+    description: |
+      1–1000 characters. When `deleted` is true this is the tombstone
+      `comment deleted`; the original body is never returned.
+  depth:
+    type: integer
+    minimum: 0
+    maximum: 4
+  createdAt:
+    type: string
+    format: date-time
+  deleted:
+    type: boolean
+    description: True after the author tombstones the comment.
+  likeCount:
+    type: integer
+    minimum: 0
+  liked:
+    type: boolean
+    description: Whether the caller currently likes this comment.
+  replyCount:
+    type: integer
+    minimum: 0
+    description: Direct children, including tombstones. Expand via GET /comments/{id}/replies.
