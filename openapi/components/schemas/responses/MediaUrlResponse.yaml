@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [url, expiresAt]
+description: |
+  FS-MED-07. Short-lived signed GET (default 60 s) after canRead. Deny and
+  missing both return NOT_FOUND.
+properties:
+  url:
+    type: string
+    format: uri
+  expiresAt:
+    type: string
+    format: date-time

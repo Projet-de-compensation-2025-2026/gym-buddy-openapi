@@ -21,6 +21,8 @@ tags:
     description: Public and private member profiles (FS-PROF-01..07).
   - name: Friends
     description: Friend requests, accepted pairs, and blocks (FS-FRND-01..08).
+  - name: Media
+    description: Disk-safe uploads and controlled file access (FS-MED-01..09).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -54,6 +56,12 @@ paths:
     $ref: ./paths/blocks.yaml#/collection
   /blocks/{userId}:
     $ref: ./paths/blocks.yaml#/item
+  /media:
+    $ref: ./paths/media.yaml#/collection
+  /media/{id}/url:
+    $ref: ./paths/media.yaml#/url
+  /media/{id}:
+    $ref: ./paths/media.yaml#/item
 components:
   securitySchemes:
     bearerAuth:
@@ -82,6 +90,12 @@ components:
       $ref: ./components/schemas/requests/CreateFriendshipRequest.yaml
     CreateBlockRequest:
       $ref: ./components/schemas/requests/CreateBlockRequest.yaml
+    CreateMediaRequest:
+      $ref: ./components/schemas/requests/CreateMediaRequest.yaml
+    CreateMediaResponse:
+      $ref: ./components/schemas/responses/CreateMediaResponse.yaml
+    MediaUrlResponse:
+      $ref: ./components/schemas/responses/MediaUrlResponse.yaml
     RegisteredUser:
       $ref: ./components/schemas/entities/RegisteredUser.yaml
     AccessTokenResponse:

@@ -1,0 +1,16 @@
+type: object
+additionalProperties: false
+required: [mediaId, uploadUrl, expiresAt]
+description: |
+  FS-MED-02. `uploadUrl` is a short-lived signed PUT to object storage.
+  Bytes never land in a public `/uploads` directory on the API host.
+properties:
+  mediaId:
+    type: string
+    format: uuid
+  uploadUrl:
+    type: string
+    format: uri
+  expiresAt:
+    type: string
+    format: date-time

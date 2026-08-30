@@ -11,6 +11,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Password change: `POST /auth/password` (FS-ACCT-05). Ticket #59.
 - Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
 - Friendships and blocks: `GET`/`POST /friendships`, accept/decline/delete, `POST /blocks`, `DELETE /blocks/{userId}` (FS-FRND-01..08). Ticket #60.
+- Media: `POST /media`, `GET /media/{id}/url`, `DELETE /media/{id}` (FS-MED-01..09). Ticket #68. Error codes `PAYLOAD_TOO_LARGE` and `QUOTA_EXCEEDED`.
 - `ErrorResponse` code `NOT_FOUND` for unknown or closed handles.
 
 ### Changed

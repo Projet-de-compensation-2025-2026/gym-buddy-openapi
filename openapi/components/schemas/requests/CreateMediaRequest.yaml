@@ -1,0 +1,25 @@
+type: object
+additionalProperties: false
+required: [kind, mime, bytes]
+description: |
+  FS-MED-02. Declares an upload. `bytes` is the intended object size (quota
+  check), not the file body. The client then PUT the bytes to `uploadUrl`.
+  Images jpeg/png/webp; audio webm/mpeg (message only). Max 8 MiB. Mockup
+  "Max 2MB" is leftover.
+properties:
+  kind:
+    type: string
+    enum: [avatar, post, message, event]
+  mime:
+    type: string
+    enum:
+      - image/jpeg
+      - image/png
+      - image/webp
+      - audio/webm
+      - audio/mpeg
+  bytes:
+    type: integer
+    minimum: 1
+    maximum: 8388608
+    description: Declared size in bytes. Max 8 MiB.
