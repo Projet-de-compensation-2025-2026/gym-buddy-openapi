@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [password]
+description: |
+  FS-ACCT-07. Confirms close with the current password. Sets `users.status=closed`.
+  Login afterwards is the same generic FORBIDDEN as a locked account. Mockup copy
+  "recover by logging back in" is not the contract; staff restore via unlock.
+properties:
+  password:
+    type: string
+    format: password
+    writeOnly: true
+    minLength: 1

@@ -1,0 +1,67 @@
+type: object
+additionalProperties: false
+required: [handle, visibility, view]
+description: |
+  Member profile (FS-PROF-01..05). `view=full` is the owner, an accepted friend,
+  or staff. `view=stub` is a stranger on a private profile: handle, optional
+  initials, visibility, and avatar id only — no bio, sports, city, windows, or
+  friend count (FS-PROF-04). Avatars are a media id until the media ticket;
+  there is no local `/uploads` path.
+properties:
+  view:
+    type: string
+    enum: [full, stub]
+  handle:
+    type: string
+    minLength: 1
+    description: Public unique identifier (FS-ACCT-02).
+  displayName:
+    type: string
+    description: Full display name on a full view. Initials only, or omitted, on a stub.
+  visibility:
+    type: string
+    enum: [public, private]
+  bio:
+    type: [string, "null"]
+    description: Present on a full view only.
+  sports:
+    type: array
+    maxItems: 12
+    items:
+      type: string
+      minLength: 2
+      maxLength: 32
+    description: Present on a full view only. Controlled vocabulary plus free-text tags.
+  experienceLevel:
+    type: [string, "null"]
+    enum: [beginner, intermediate, advanced, null]
+    description: Present on a full view only.
+  city:
+    type: [string, "null"]
+    description: Present on a full view only.
+  lat:
+    type: [number, "null"]
+    format: double
+    minimum: -90
+    maximum: 90
+    description: Present on a full view only.
+  lng:
+    type: [number, "null"]
+    format: double
+    minimum: -180
+    maximum: 180
+    description: Present on a full view only.
+  preferredWindows:
+    type: array
+    maxItems: 14
+    items:
+      $ref: ./PreferredWindow.yaml
+    description: Present on a full view only.
+  avatarMediaId:
+    type: [string, "null"]
+    format: uuid
+    description: Optional. Shown on stubs unless the owner hides it (default shown).
+  friendCount:
+    type: integer
+    minimum: 0
+    description: Count of accepted friendships. Full view only. Not a workout counter.

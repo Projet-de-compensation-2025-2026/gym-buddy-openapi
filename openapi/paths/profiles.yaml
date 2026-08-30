@@ -1,0 +1,149 @@
+me:
+  get:
+    operationId: getProfilesMe
+    tags: [Profiles]
+    summary: Read the signed-in member's full profile
+    description: |
+      Owner view of the profile (FS-PROF-01). Always `view=full`. Login required.
+    responses:
+      "200":
+        description: Full profile of the caller.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Profile.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  patch:
+    operationId: patchProfilesMe
+    tags: [Profiles]
+    summary: Update the signed-in member's profile
+    description: |
+      Owner-only (FS-PROF-02, FS-PROF-06). Nobody else can edit; staff lock the
+      account instead. Handle must stay unique (FS-ACCT-02). Invalid sports,
+      windows, or experience is VALIDATION.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/PatchProfileRequest.yaml
+          examples:
+            publicBio:
+              value:
+                displayName: Alex
+                visibility: public
+                bio: Looking for a morning running partner.
+                sports: [running, hiit]
+                experienceLevel: intermediate
+                city: Seattle, WA
+    responses:
+      "200":
+        description: Updated full profile.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Profile.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Handle already taken (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              duplicateHandle:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: handle already taken
+                    details:
+                      - path: handle
+                        issue: duplicate
+      "422":
+        description: Invalid sports, windows, experience, or payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+byHandle:
+  parameters:
+    - name: handle
+      in: path
+      required: true
+      description: Public unique identifier. Unknown or closed handles are NOT_FOUND.
+      schema:
+        type: string
+        minLength: 1
+  get:
+    operationId: getProfilesHandle
+    tags: [Profiles]
+    summary: Read a member profile by handle
+    description: |
+      Login required to view any profile (FS-PROF-05). A public profile is fully
+      readable by any authenticated member (FS-PROF-03). A private profile is
+      fully readable by the owner, accepted friends, and staff; others receive a
+      stub (`view=stub`) with handle, optional initials, visibility, and avatar
+      — no bio, sports, or location (FS-PROF-04). Closed and unknown handles are
+      the same NOT_FOUND (no existence leak).
+    responses:
+      "200":
+        description: Full profile or private stub, depending on ACL.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Profile.yaml
+            examples:
+              publicFull:
+                summary: Public profile, full view
+                value:
+                  view: full
+                  handle: demo.blake
+                  displayName: Blake
+                  visibility: public
+                  bio: Fitness enthusiast always looking for a spotter.
+                  sports: [crossfit, running, hiit]
+                  experienceLevel: advanced
+                  city: Austin, TX
+                  lat: 30.2672
+                  lng: -97.7431
+                  preferredWindows:
+                    - weekday: 1
+                      start: "06:00"
+                      end: "08:00"
+                  avatarMediaId: null
+                  friendCount: 45
+              privateStub:
+                summary: Stranger on a private profile
+                value:
+                  view: stub
+                  handle: demo.blake
+                  visibility: private
+                  avatarMediaId: null
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown or closed handle (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              unknown:
+                value:
+                  error:
+                    code: NOT_FOUND
+                    message: profile not found

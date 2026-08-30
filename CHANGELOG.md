@@ -7,6 +7,11 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Profiles: `GET`/`PATCH /profiles/me`, `GET /profiles/{handle}` (full vs private stub, FS-PROF-01..06). Ticket #59.
+- Password change: `POST /auth/password` (FS-ACCT-05). Ticket #59.
+- Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
+- `ErrorResponse` code `NOT_FOUND` for unknown or closed handles.
+
 ### Changed
 
 - Delete checked-in `openapi/bundled.yaml`. Consumers already generate from the `$ref` tree (`openapi/openapi.yaml` on tag **v0.1.0**). CI may flatten a temp bundle as a lint check; that file is not checked in. Ticket #54.
