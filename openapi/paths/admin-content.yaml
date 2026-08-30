@@ -1,9 +1,76 @@
+collection:
+  get:
+    operationId: getAdminContent
+    tags: [Admin]
+    summary: List hideable content for staff
+    description: |
+      FS-ADM-03. Staff. Lists posts, comments, events, or media the caller
+      can hide or unhide, including hidden rows and `hiddenReason`. Members
+      get NOT_FOUND (do not advertise staff routes). Cursor `after` is
+      opaque (`page.next`). Default size 20, max 50.
+    parameters:
+      - name: type
+        in: query
+        required: true
+        description: Content kind to list.
+        schema:
+          type: string
+          enum: [post, comment, event, media]
+      - name: q
+        in: query
+        description: Search summary, author handle, or id.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - name: hidden
+        in: query
+        description: When set, keep only hidden (`true`) or visible (`false`) rows.
+        schema:
+          type: boolean
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of content rows.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AdminContentPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Invalid type, size, or cursor (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
 hide:
   parameters:
     - name: type
       in: path
       required: true
-      description: Content kind. `event` may be NOT_FOUND until events land.
+      description: Content kind.
       schema:
         type: string
         enum: [post, comment, event, media]
@@ -20,7 +87,6 @@ hide:
     description: |
       FS-ADM-03. Staff. Hide is not a member delete: members see NOT_FOUND;
       staff still see the row plus reason. Missing reason is VALIDATION.
-      `type=event` is NOT_FOUND until the events service is on develop.
       Members calling this path get NOT_FOUND. Writes `audit_events`.
     requestBody:
       required: true
@@ -42,7 +108,7 @@ hide:
             schema:
               $ref: ../components/schemas/entities/ErrorResponse.yaml
       "404":
-        description: Unknown type/id, events not available, or caller is not staff (NOT_FOUND).
+        description: Unknown type/id or caller is not staff (NOT_FOUND).
         content:
           application/json:
             schema:

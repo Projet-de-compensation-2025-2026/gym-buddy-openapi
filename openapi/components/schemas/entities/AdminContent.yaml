@@ -1,0 +1,33 @@
+type: object
+additionalProperties: false
+required:
+  - type
+  - id
+  - authorHandle
+  - summary
+  - createdAt
+  - hidden
+description: |
+  Staff row for hideable content (FS-ADM-03). Members never receive this
+  shape. Hide via `POST /admin/content/{type}/{id}/hide`; restore via
+  unhide. `summary` is a short body/title/object-key snippet.
+properties:
+  type:
+    type: string
+    enum: [post, comment, event, media]
+  id:
+    type: string
+    format: uuid
+  authorHandle:
+    type: string
+  summary:
+    type: string
+    maxLength: 280
+  createdAt:
+    type: string
+    format: date-time
+  hidden:
+    type: boolean
+  hiddenReason:
+    type: [string, "null"]
+    maxLength: 1000

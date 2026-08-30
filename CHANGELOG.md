@@ -7,6 +7,8 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Staff `GET /admin/content` lists hideable posts, comments, events, and media (including hidden rows and `hiddenReason`) for FS-ADM-03. Ticket #80. Members still get `NOT_FOUND`.
+
 ### Changed
 
 - CI accepts `package.json` / `info.version` **1.y.z** now that tag **v1.0.0** exists. It still rejects 2.0.0+.
