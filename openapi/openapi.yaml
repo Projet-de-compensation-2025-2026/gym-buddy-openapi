@@ -4,8 +4,9 @@ info:
   version: 0.1.0
   description: |
     Canonical HTTP contract. Edit this $ref tree. Generators read
-    `openapi/openapi.yaml` on a tagged package checkout (v0.1.0).
-    Do not treat a running Spring /v3/api-docs as source of truth.
+    `openapi/openapi.yaml` on a tagged package checkout (or a develop SHA
+    pin until the next 0.1.x tag). Do not treat a running Spring
+    /v3/api-docs as source of truth.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -15,7 +16,9 @@ security:
   - bearerAuth: []
 tags:
   - name: Auth
-    description: Sign-up, sign-in, refresh, and log-out (FS-ACCT-01..04, FS-ACCT-06).
+    description: Sign-up, sign-in, refresh, log-out, password change, and close account (FS-ACCT-01..07).
+  - name: Profiles
+    description: Public and private member profiles (FS-PROF-01..07).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -29,6 +32,14 @@ paths:
     $ref: ./paths/auth.yaml#/refresh
   /auth/logout:
     $ref: ./paths/auth.yaml#/logout
+  /auth/password:
+    $ref: ./paths/auth.yaml#/password
+  /me/close:
+    $ref: ./paths/me.yaml#/close
+  /profiles/me:
+    $ref: ./paths/profiles.yaml#/me
+  /profiles/{handle}:
+    $ref: ./paths/profiles.yaml#/byHandle
 components:
   securitySchemes:
     bearerAuth:
@@ -47,10 +58,20 @@ components:
       $ref: ./components/schemas/requests/RegisterRequest.yaml
     LoginRequest:
       $ref: ./components/schemas/requests/LoginRequest.yaml
+    ChangePasswordRequest:
+      $ref: ./components/schemas/requests/ChangePasswordRequest.yaml
+    CloseAccountRequest:
+      $ref: ./components/schemas/requests/CloseAccountRequest.yaml
+    PatchProfileRequest:
+      $ref: ./components/schemas/requests/PatchProfileRequest.yaml
     RegisteredUser:
       $ref: ./components/schemas/entities/RegisteredUser.yaml
     AccessTokenResponse:
       $ref: ./components/schemas/responses/AccessTokenResponse.yaml
+    Profile:
+      $ref: ./components/schemas/entities/Profile.yaml
+    PreferredWindow:
+      $ref: ./components/schemas/entities/PreferredWindow.yaml
     ErrorResponse:
       $ref: ./components/schemas/entities/ErrorResponse.yaml
     ErrorDetail:

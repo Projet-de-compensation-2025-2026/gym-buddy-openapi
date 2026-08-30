@@ -1,0 +1,52 @@
+close:
+  post:
+    operationId: postMeClose
+    tags: [Auth]
+    summary: Close the signed-in account
+    description: |
+      Soft-closes the member (FS-ACCT-07). Body `{ password }` must match the
+      current password. Sets `users.status=closed`. Profile, posts, and media
+      become hidden from other members (`NOT_FOUND`). Login and refresh afterwards
+      fail with the same generic FORBIDDEN as a locked account. Staff restore with
+      unlock. Mockup copy "recover by logging back in" is not the contract.
+      Revokes every refresh `jti` and clears the refresh cookie.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CloseAccountRequest.yaml
+          examples:
+            confirm:
+              value:
+                password: a-long-enough-secret
+    responses:
+      "204":
+        description: Account closed. Refresh cookie cleared.
+        headers:
+          Set-Cookie:
+            $ref: ../components/headers.yaml#/ClearRefreshCookie
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Wrong password (FORBIDDEN). Status is unchanged.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              wrongPassword:
+                value:
+                  error:
+                    code: FORBIDDEN
+                    message: invalid credentials
+      "422":
+        description: Password missing (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

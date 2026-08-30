@@ -69,8 +69,9 @@ login:
       Verifies email and password (Argon2id, timing-safe). On success returns an access JWT
       in the JSON body and a refresh JWT in `Set-Cookie` (FS-ACCT-04).
       The access token is not set as a cookie. Unknown email and wrong password use the
-      same generic invalid-credentials response. Locked users fail with FORBIDDEN without
-      revealing whether the password was correct.
+      same generic invalid-credentials response. Locked and closed users fail with the
+      same generic FORBIDDEN without revealing whether the password was correct
+      (FS-ACCT-07).
     security: []
     requestBody:
       required: true
@@ -94,7 +95,7 @@ login:
             schema:
               $ref: ../components/schemas/responses/AccessTokenResponse.yaml
       "403":
-        description: Locked user, or invalid credentials (FORBIDDEN).
+        description: Locked or closed user, or invalid credentials (FORBIDDEN).
         content:
           application/json:
             schema:
@@ -107,7 +108,7 @@ login:
                     code: FORBIDDEN
                     message: invalid credentials
               locked:
-                summary: Account is locked (password correctness is not revealed)
+                summary: Account is locked or closed (password correctness is not revealed)
                 value:
                   error:
                     code: FORBIDDEN
@@ -127,7 +128,8 @@ refresh:
       Cookie only — no request body and no access token.
       Validates the refresh cookie (`typ=refresh`), replaces `jti` (rotation), and returns
       a new access JWT in JSON plus a new refresh `Set-Cookie`.
-      Locked users fail. Missing, expired, or denylisted refresh fails as UNAUTHENTICATED.
+      Locked and closed users fail with the same generic FORBIDDEN.
+      Missing, expired, or denylisted refresh fails as UNAUTHENTICATED.
     security:
       - refreshCookie: []
     responses:
@@ -153,7 +155,7 @@ refresh:
                     code: UNAUTHENTICATED
                     message: refresh credential is missing or no longer valid
       "403":
-        description: User is locked (FORBIDDEN).
+        description: User is locked or closed (FORBIDDEN).
         content:
           application/json:
             schema:
@@ -187,3 +189,63 @@ logout:
           application/json:
             schema:
               $ref: ../components/schemas/entities/ErrorResponse.yaml
+password:
+  post:
+    operationId: postAuthPassword
+    tags: [Auth]
+    summary: Change password
+    description: |
+      The member presents the current password and a valid new password (FS-ACCT-05).
+      New password follows FS-ACCT-03. On success the Argon2id hash is replaced and
+      every refresh `jti` is revoked. Response is 204; the client must sign in again.
+      Wrong current password is FORBIDDEN and the hash is unchanged.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/ChangePasswordRequest.yaml
+          examples:
+            valid:
+              value:
+                currentPassword: a-long-enough-secret
+                newPassword: a-different-long-secret
+    responses:
+      "204":
+        description: Password updated. All refresh credentials revoked. Cookie cleared.
+        headers:
+          Set-Cookie:
+            $ref: ../components/headers.yaml#/ClearRefreshCookie
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Wrong current password (FORBIDDEN). Hash unchanged.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              wrongPassword:
+                value:
+                  error:
+                    code: FORBIDDEN
+                    message: invalid credentials
+      "422":
+        description: Weak or invalid new password, or payload fails schema (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              weakPassword:
+                value:
+                  error:
+                    code: VALIDATION
+                    message: password must be at least 10 characters and must not equal email or handle
+                    details:
+                      - path: newPassword
+                        issue: weak
