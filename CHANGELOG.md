@@ -12,6 +12,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
 - Friendships and blocks: `GET`/`POST /friendships`, accept/decline/delete, `POST /blocks`, `DELETE /blocks/{userId}` (FS-FRND-01..08). Ticket #60.
 - Media: `POST /media`, `GET /media/{id}/url`, `DELETE /media/{id}` (FS-MED-01..09). Ticket #68. Error codes `PAYLOAD_TOO_LARGE` and `QUOTA_EXCEEDED`.
+- Posts, likes, and reposts: `POST /posts`, `GET`/`PATCH`/`DELETE /posts/{id}`, `POST`/`DELETE /posts/{id}/reposts`, `PUT`/`DELETE /posts/{id}/like`, `GET /posts/{id}/likes` (FS-POST-01..08). Ticket #61. Visibility `friends` (default) or `public`. Edit window 15 minutes. Soft-delete. Idempotent like. Unique repost. Max 4 image `mediaIds`.
 - `ErrorResponse` code `NOT_FOUND` for unknown or closed handles.
 
 ### Changed

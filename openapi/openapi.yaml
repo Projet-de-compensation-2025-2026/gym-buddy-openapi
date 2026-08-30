@@ -23,6 +23,8 @@ tags:
     description: Friend requests, accepted pairs, and blocks (FS-FRND-01..08).
   - name: Media
     description: Disk-safe uploads and controlled file access (FS-MED-01..09).
+  - name: Posts
+    description: Posts, likes, and reposts (FS-POST-01..08).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -62,6 +64,16 @@ paths:
     $ref: ./paths/media.yaml#/url
   /media/{id}:
     $ref: ./paths/media.yaml#/item
+  /posts:
+    $ref: ./paths/posts.yaml#/collection
+  /posts/{id}:
+    $ref: ./paths/posts.yaml#/item
+  /posts/{id}/reposts:
+    $ref: ./paths/posts.yaml#/reposts
+  /posts/{id}/like:
+    $ref: ./paths/posts.yaml#/like
+  /posts/{id}/likes:
+    $ref: ./paths/posts.yaml#/likes
 components:
   securitySchemes:
     bearerAuth:
@@ -92,6 +104,10 @@ components:
       $ref: ./components/schemas/requests/CreateBlockRequest.yaml
     CreateMediaRequest:
       $ref: ./components/schemas/requests/CreateMediaRequest.yaml
+    CreatePostRequest:
+      $ref: ./components/schemas/requests/CreatePostRequest.yaml
+    PatchPostRequest:
+      $ref: ./components/schemas/requests/PatchPostRequest.yaml
     CreateMediaResponse:
       $ref: ./components/schemas/responses/CreateMediaResponse.yaml
     MediaUrlResponse:
@@ -110,6 +126,14 @@ components:
       $ref: ./components/schemas/entities/FriendshipPeer.yaml
     FriendshipPage:
       $ref: ./components/schemas/entities/FriendshipPage.yaml
+    Post:
+      $ref: ./components/schemas/entities/Post.yaml
+    PostAuthor:
+      $ref: ./components/schemas/entities/PostAuthor.yaml
+    PostLiker:
+      $ref: ./components/schemas/entities/PostLiker.yaml
+    PostLikerPage:
+      $ref: ./components/schemas/entities/PostLikerPage.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:

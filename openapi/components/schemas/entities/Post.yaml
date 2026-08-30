@@ -1,0 +1,57 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - author
+  - visibility
+  - mediaIds
+  - createdAt
+  - likeCount
+  - repostCount
+  - commentCount
+  - liked
+  - reposted
+description: |
+  Member post (FS-POST-01..08). `visibility` is `friends` (default) or `public`.
+  Hidden or deleted posts are `NOT_FOUND` to members. `mediaIds` are `kind=post`
+  image rows owned by the author and `ready` (max 4). `commentCount` is 0 until
+  nested comments land.
+properties:
+  id:
+    type: string
+    format: uuid
+  author:
+    $ref: ./PostAuthor.yaml
+  body:
+    type: [string, "null"]
+    maxLength: 2000
+  visibility:
+    type: string
+    enum: [friends, public]
+  mediaIds:
+    type: array
+    maxItems: 4
+    items:
+      type: string
+      format: uuid
+  createdAt:
+    type: string
+    format: date-time
+  editedAt:
+    type: [string, "null"]
+    format: date-time
+  likeCount:
+    type: integer
+    minimum: 0
+  repostCount:
+    type: integer
+    minimum: 0
+  commentCount:
+    type: integer
+    minimum: 0
+  liked:
+    type: boolean
+    description: Whether the caller currently likes this post.
+  reposted:
+    type: boolean
+    description: Whether the caller currently has a repost of this post.

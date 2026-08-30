@@ -42,10 +42,10 @@ Ticket **#54** deletes the former checked-in `openapi/bundled.yaml`. It is **not
 | --- | --- |
 | `package.json` | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`. |
 | `openapi/openapi.yaml` | Thin root. **Edit source and generator entry.** |
-| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`) |
+| `openapi/paths/` | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`) |
 | `openapi/components/schemas/entities/` | Shared entities (`HealthStatus`, `RegisteredUser`, `Profile`, `ErrorResponse`, …) |
-| `openapi/components/schemas/requests/` | Request bodies (`RegisterRequest`, `LoginRequest`, `ChangePasswordRequest`, `CloseAccountRequest`, `PatchProfileRequest`) |
-| `openapi/components/schemas/responses/` | Response bodies (`AccessTokenResponse`) |
+| `openapi/components/schemas/requests/` | Request bodies (`RegisterRequest`, `LoginRequest`, `CreatePostRequest`, `PatchPostRequest`, …) |
+| `openapi/components/schemas/responses/` | Response bodies (`AccessTokenResponse`, `CreateMediaResponse`, `MediaUrlResponse`) |
 | `openapi/components/securitySchemes.yaml` | `bearerAuth`, `refreshCookie` |
 | `openapi/components/headers.yaml` | Refresh `Set-Cookie` / clear-cookie headers |
 
@@ -61,6 +61,8 @@ Server prefix `/api/v1`:
 - `GET`/`PATCH /profiles/me`, `GET /profiles/{handle}`
 - `GET`/`POST /friendships`, `POST /friendships/{id}/accept`, `/decline`, `DELETE /friendships/{id}`
 - `POST /blocks`, `DELETE /blocks/{userId}`
+- `POST /media`, `GET /media/{id}/url`, `DELETE /media/{id}`
+- `POST /posts`, `GET`/`PATCH`/`DELETE /posts/{id}`, `POST`/`DELETE /posts/{id}/reposts`, `PUT`/`DELETE /posts/{id}/like`, `GET /posts/{id}/likes`
 
 ## Pipeline
 
