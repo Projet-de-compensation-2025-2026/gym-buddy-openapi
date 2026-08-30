@@ -7,6 +7,12 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+## [1.0.0] — 2026-08-30
+
+### Added
+
 - Fixture generate body: optional `GenerateFixturesRequest` on `POST /admin/fixtures` (users, friendships, posts, comments, events, applications, messages, media) with Approved defaults from `07-Test-fixtures.md`. Ticket #70. `POST /admin/fixtures/reset` stays the `--reset` truncate. Disabled on `prod` (FORBIDDEN).
 - Messaging: `GET`/`POST /conversations`, `GET`/`POST /conversations/{id}/messages`, `DELETE /messages/{id}`, `GET /ws` (FS-MSG-01..10). Ticket #67. Friends-only direct pair, text 1–4000, one image or one audio via existing `/media` (`kind=message`). Sender tombstone within 10 minutes. Inbox unread counts. Persistence first; WebSocket fan-out of `message.created`, `message.deleted`, `conversation.updated`. Non-friends `FORBIDDEN`; stranger conversation `NOT_FOUND`.
 - Parameterized search: `GET /search/people` and `GET /search/events` (FS-SRCH-01..08). Ticket #65. Query params `q`, `sports` (repeat, any-of), `experience`, `city`, `radiusKm` (1–50), `friendState`, `activity`, `from`/`to`, `remaining`, `organizerIsFriend`, `sort=relevance|distance|starts_at`, cursor `before`, `size`, `debug`. Unauthenticated is `401`. Private strangers, blocked users, and (when `remaining=true`) full events never appear.
@@ -43,4 +49,5 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Package consumers pin a git tag and generate from `openapi/openapi.yaml` (the `$ref` tree). That is the target SoT. `openapi/bundled.yaml` stays checked in as today’s `gym-buddy-service` fetch file until ticket #47. Pin a tag, not a raw `develop` SHA.
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi
+[1.0.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.0.0
 [0.1.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v0.1.0
