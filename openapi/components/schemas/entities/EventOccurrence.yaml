@@ -1,0 +1,24 @@
+type: object
+additionalProperties: false
+required: [id, eventId, startsAt, remainingSeats, acceptedCount, cancelled]
+description: |
+  One session in a 90-day window (FS-EVT-03). Instant events have a single
+  occurrence. Recurring events enumerate `FREQ=WEEKLY;BYDAY` (+ optional UNTIL).
+properties:
+  id:
+    type: string
+    format: uuid
+  eventId:
+    type: string
+    format: uuid
+  startsAt:
+    type: string
+    format: date-time
+  remainingSeats:
+    type: integer
+    minimum: 0
+  acceptedCount:
+    type: integer
+    minimum: 0
+  cancelled:
+    type: boolean

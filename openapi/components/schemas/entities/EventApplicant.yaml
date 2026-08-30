@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+required: [application, matchingScore]
+description: |
+  Pending applicant on organizer detail, ordered by matching score (FS-EVT-13,
+  50-Algorithms/03-User-matching.md problem 1). Capacity is not in the score.
+properties:
+  application:
+    $ref: ./EventApplication.yaml
+  matchingScore:
+    type: number
+    format: double
+    minimum: 0
+    maximum: 1
