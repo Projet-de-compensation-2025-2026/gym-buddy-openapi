@@ -1,0 +1,125 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizer
+  - title
+  - activity
+  - place
+  - startsAt
+  - durationMin
+  - visibility
+  - capacity
+  - remainingSeats
+  - kind
+  - createdAt
+  - occurrences
+  - tags
+  - pendingApplicants
+description: |
+  Training event (FS-EVT-01..13). `kind` is `instant` when `recurrence` is empty,
+  otherwise `recurring`. Capacity is accepted applicants 1–100; the organizer
+  occupies no seat. `occurrences` is the 90-day window (materialised), not only
+  the RRULE string (FS-EVT-03). `pendingApplicants` is organizer-only suggested
+  accept order (FS-EVT-13); other callers get an empty array. Hidden, cancelled
+  series the caller may not read, unknown, or not visible is NOT_FOUND.
+properties:
+  id:
+    type: string
+    format: uuid
+  organizer:
+    $ref: ./PostAuthor.yaml
+  title:
+    type: string
+    minLength: 1
+    maxLength: 120
+  description:
+    type: [string, "null"]
+    maxLength: 2000
+  activity:
+    type: string
+    minLength: 2
+    maxLength: 32
+  place:
+    type: string
+    minLength: 1
+    maxLength: 200
+  lat:
+    type: [number, "null"]
+    format: double
+    minimum: -90
+    maximum: 90
+  lng:
+    type: [number, "null"]
+    format: double
+    minimum: -180
+    maximum: 180
+  startsAt:
+    type: string
+    format: date-time
+    description: First occurrence start (UTC). Recurring series keep this as DTSTART.
+  durationMin:
+    type: integer
+    minimum: 1
+    maximum: 1440
+  visibility:
+    type: string
+    enum: [public, friends, private]
+  capacity:
+    type: integer
+    minimum: 1
+    maximum: 100
+    description: Accepted applicants excluding the organizer.
+  remainingSeats:
+    type: integer
+    minimum: 0
+    description: Seats left on the next upcoming occurrence (0 if none or full).
+  kind:
+    type: string
+    enum: [instant, recurring]
+  recurrence:
+    type: [string, "null"]
+    description: |
+      RFC 5545 RRULE. Empty/null is instant (FS-EVT-02). Recurring MVP is
+      `FREQ=WEEKLY` with `BYDAY` and optional `UNTIL` (FS-EVT-03).
+    examples:
+      - FREQ=WEEKLY;BYDAY=TU
+      - FREQ=WEEKLY;BYDAY=MO,WE;UNTIL=20261201T180000Z
+  tags:
+    type: array
+    maxItems: 8
+    items:
+      type: string
+      minLength: 1
+      maxLength: 32
+    description: Optional Focus Areas chips (activity plus tags). Not a workout entity.
+  coverMediaId:
+    type: [string, "null"]
+    format: uuid
+    description: Optional ready `kind=event` image owned by the organizer.
+  cancelledAt:
+    type: [string, "null"]
+    format: date-time
+  updatedAfterAccept:
+    type: boolean
+    description: True when place/time changed after at least one accept (FS-EVT-09).
+  createdAt:
+    type: string
+    format: date-time
+  occurrences:
+    type: array
+    items:
+      $ref: ./EventOccurrence.yaml
+  viewerApplication:
+    $ref: ./EventApplication.yaml
+  pendingApplicants:
+    type: array
+    items:
+      $ref: ./EventApplicant.yaml
+    description: Organizer GET detail only. Ordered by matching score descending.
+  inviteeIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: Private events. Organizer-only. Invitees may view and apply.

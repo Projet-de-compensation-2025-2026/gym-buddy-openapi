@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+required: [id, peer, unreadCount, updatedAt]
+description: |
+  Direct conversation in the caller's inbox (FS-MSG-01, FS-MSG-09). One row
+  per unordered friend pair. `peer` is the other participant. `unreadCount`
+  is messages from the peer since the caller last GET the thread.
+  `updatedAt` is last-message time (or created time if empty).
+properties:
+  id:
+    type: string
+    format: uuid
+  peer:
+    $ref: ./ConversationPeer.yaml
+  lastMessage:
+    $ref: ./Message.yaml
+  unreadCount:
+    type: integer
+    minimum: 0
+  updatedAt:
+    type: string
+    format: date-time

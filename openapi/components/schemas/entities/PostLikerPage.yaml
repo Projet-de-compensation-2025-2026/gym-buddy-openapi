@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: Cursor page of nominative likers (FS-POST-08). Author only.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./PostLiker.yaml
+  page:
+    $ref: ./Page.yaml

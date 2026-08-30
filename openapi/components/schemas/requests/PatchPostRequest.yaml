@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+description: |
+  FS-POST-03. Author only, within 15 minutes of `createdAt`. Edits set
+  `editedAt`. After the window the API returns FORBIDDEN. Body may be empty
+  only if the post still has 1–4 images.
+properties:
+  body:
+    type: [string, "null"]
+    maxLength: 2000

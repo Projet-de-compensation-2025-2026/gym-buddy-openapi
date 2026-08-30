@@ -1,0 +1,67 @@
+collection:
+  get:
+    operationId: getAdminAudit
+    tags: [Admin]
+    summary: List staff audit events
+    description: |
+      FS-ADM-06. Admins see the full append-only log. Moderators see their
+      own rows plus content hide/unhide. Members get NOT_FOUND. Cursor
+      `after` is opaque (`page.next`). Default size 20, max 50.
+    parameters:
+      - name: q
+        in: query
+        description: Search actor handle, action, or reason.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - name: action
+        in: query
+        schema:
+          type: string
+          enum:
+            - lock_user
+            - unlock_user
+            - change_role
+            - hide_content
+            - unhide_content
+            - resolve_report
+            - generate_fixtures
+            - reset_fixtures
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of audit events.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/AuditEventPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Caller is not staff (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

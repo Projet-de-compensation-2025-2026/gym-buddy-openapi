@@ -1,0 +1,328 @@
+collection:
+  post:
+    operationId: postPosts
+    tags: [Posts]
+    summary: Create a post
+    description: |
+      FS-POST-01, FS-POST-02. Authenticated member. Text 1–2000 characters
+      and/or 1–4 ready image `mediaIds` (`kind=post`, owned by the caller).
+      Empty body and no media is VALIDATION. Default visibility is `friends`.
+      Video is out of scope.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreatePostRequest.yaml
+          examples:
+            textFriends:
+              value:
+                body: Crushed leg day today! Hit a new PR on squats.
+                visibility: friends
+            imagesOnly:
+              value:
+                body: null
+                visibility: public
+                mediaIds:
+                  - 00000000-0000-4000-8000-000000000001
+    responses:
+      "201":
+        description: Post created.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Post.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Empty body with no media, too many images, or invalid payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getPostsId
+    tags: [Posts]
+    summary: Read a post
+    description: |
+      FS-POST-02. `canView`: author; if `public` any member; if `friends`
+      accepted friends. Hidden, deleted, unknown, or not visible is NOT_FOUND.
+      Blocked callers get NOT_FOUND.
+    responses:
+      "200":
+        description: Visible post.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Post.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  patch:
+    operationId: patchPostsId
+    tags: [Posts]
+    summary: Edit a post body
+    description: |
+      FS-POST-03. Author only, within 15 minutes of create. Sets `editedAt`.
+      After the window FORBIDDEN. Other callers get NOT_FOUND.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/PatchPostRequest.yaml
+    responses:
+      "200":
+        description: Updated post.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Post.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Edit window elapsed (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the author (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Empty body with no media, or invalid payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  delete:
+    operationId: deletePostsId
+    tags: [Posts]
+    summary: Soft-delete a post
+    description: |
+      FS-POST-04. Author only. Sets `deleted_at`. Comments become inaccessible.
+      Other callers get NOT_FOUND.
+    responses:
+      "204":
+        description: Post soft-deleted.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the author (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+reposts:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postPostsIdReposts
+    tags: [Posts]
+    summary: Repost a visible post
+    description: |
+      FS-POST-05, FS-POST-06. Caller must `canView` the original. No extra body
+      at MVP. Duplicate `(user_id, post_id)` is CONFLICT. One undo via DELETE.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    responses:
+      "201":
+        description: Repost recorded. Returns the original post with updated counts.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Post.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Caller already reposted this post (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              duplicate:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: already reposted
+  delete:
+    operationId: deletePostsIdReposts
+    tags: [Posts]
+    summary: Undo a repost
+    description: FS-POST-06. Removes the caller's unique repost row. Missing row is NOT_FOUND.
+    responses:
+      "204":
+        description: Repost removed.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown post, not visible, or no repost to undo (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+like:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  put:
+    operationId: putPostsIdLike
+    tags: [Posts]
+    summary: Like a visible post
+    description: |
+      FS-POST-07. Unique `(user_id, target_type=post, target_id)`. A second PUT
+      does not double-count. Stranger on a friends-only post is NOT_FOUND.
+    responses:
+      "204":
+        description: Like present (inserted or already existed).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  delete:
+    operationId: deletePostsIdLike
+    tags: [Posts]
+    summary: Unlike a post
+    description: FS-POST-07. Removes the like row if present. Not visible is NOT_FOUND.
+    responses:
+      "204":
+        description: Like absent.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, hidden, deleted, or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+likes:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getPostsIdLikes
+    tags: [Posts]
+    summary: List nominative likers
+    description: |
+      FS-POST-08. Like counts are on the post. The nominative list is author-only
+      at MVP. Other callers get NOT_FOUND (no existence leak).
+    parameters:
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of likers.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/PostLikerPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown post, not visible, or caller is not the author (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

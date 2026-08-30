@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+description: |
+  FS-FRND-01. Provide exactly one of `handle` or `userId`. Self-friend is
+  VALIDATION. Duplicate pending or already-friends is CONFLICT. Locked, closed,
+  missing, or blocked targets are NOT_FOUND (no existence leak).
+properties:
+  handle:
+    type: string
+    minLength: 1
+  userId:
+    type: string
+    format: uuid

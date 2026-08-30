@@ -1,0 +1,32 @@
+type: object
+additionalProperties: false
+required: [activity, startsAt, durationMin, capacity, visibility]
+description: |
+  Proposed instant session for a weekly match (FS-MATCH-03). Draft,
+  `visibility=friends`, capacity 1. `id` is set when an events row exists;
+  otherwise the pair is still returned and the caller still accepts in the
+  events UI once that surface lands.
+properties:
+  id:
+    type: [string, "null"]
+    format: uuid
+  activity:
+    type: string
+    minLength: 2
+    maxLength: 32
+  startsAt:
+    type: string
+    format: date-time
+    description: Midpoint of the overlapping preferred window this week (UTC).
+  durationMin:
+    type: integer
+    minimum: 1
+    maximum: 1440
+  capacity:
+    type: integer
+    minimum: 1
+    maximum: 1
+    description: Always 1 (the matched buddy occupies the only seat).
+  visibility:
+    type: string
+    enum: [friends]

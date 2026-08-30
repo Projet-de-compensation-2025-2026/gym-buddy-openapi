@@ -1,0 +1,36 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - email
+  - handle
+  - displayName
+  - role
+  - status
+  - createdAt
+  - lastAdmin
+description: |
+  Staff view of an account (FS-ADM, FS-ACCT-08/09). `lastAdmin` is true when
+  this row is the only `admin`; demote or lock then is CONFLICT.
+properties:
+  id:
+    type: string
+    format: uuid
+  email:
+    type: string
+    format: email
+  handle:
+    type: string
+  displayName:
+    type: string
+  role:
+    type: string
+    enum: [member, moderator, admin]
+  status:
+    type: string
+    enum: [active, locked, pending_verification, closed]
+  createdAt:
+    type: string
+    format: date-time
+  lastAdmin:
+    type: boolean

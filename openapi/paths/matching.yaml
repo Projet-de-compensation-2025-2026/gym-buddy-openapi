@@ -1,0 +1,58 @@
+optIn:
+  post:
+    operationId: postMatchingOptIn
+    tags: [Matching]
+    summary: Opt into weekly buddy matching
+    description: |
+      FS-MATCH-01. Adds the caller to this ISO week's opt-in set (Monday UTC).
+      Idempotent if already opted in. The greedy assignment runs nightly.
+    responses:
+      "204":
+        description: Opted in for the current week.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  delete:
+    operationId: deleteMatchingOptIn
+    tags: [Matching]
+    summary: Opt out of weekly buddy matching
+    description: |
+      FS-MATCH-01. Removes the caller from this week's opt-in set. Idempotent
+      if not opted in. An already-assigned pair for this week is left in place
+      (human still accepts the draft session).
+    responses:
+      "204":
+        description: Opted out (or was not opted in).
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+me:
+  get:
+    operationId: getMatchingMe
+    tags: [Matching]
+    summary: Current weekly match
+    description: |
+      FS-MATCH-02, FS-MATCH-03. Returns opt-in state, the proposed pair if the
+      greedy job assigned one, and the draft instant event (capacity 1,
+      visibility friends) at the overlapping window. `event.id` may be null
+      when the events table is not on this deploy. No edge across a block;
+      a person is assigned at most once.
+    responses:
+      "200":
+        description: Caller's matching state for the current week.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/MatchingMe.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

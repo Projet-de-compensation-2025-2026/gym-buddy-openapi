@@ -1,12 +1,12 @@
 openapi: 3.1.0
 info:
   title: Gym Buddy API
-  version: 0.1.0
+  version: 1.0.0
   description: |
-    Canonical HTTP contract. Edit this $ref tree. Target generators read
-    `openapi/openapi.yaml` on a tagged package checkout. Today's service
-    still fetches `bundled.yaml` until ticket #47. Do not treat a running
-    Spring /v3/api-docs as source of truth.
+    Canonical HTTP contract. Edit this $ref tree. Generators read
+    `openapi/openapi.yaml` on a tagged package checkout (or a develop SHA
+    pin until the next 0.1.x tag). Do not treat a running Spring
+    /v3/api-docs as source of truth.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -16,7 +16,33 @@ security:
   - bearerAuth: []
 tags:
   - name: Auth
-    description: Sign-up, sign-in, refresh, and log-out (FS-ACCT-01..04, FS-ACCT-06).
+    description: Sign-up, sign-in, refresh, log-out, password change, and close account (FS-ACCT-01..07).
+  - name: Profiles
+    description: Public and private member profiles (FS-PROF-01..07).
+  - name: Friends
+    description: Friend requests, accepted pairs, and blocks (FS-FRND-01..08).
+  - name: Media
+    description: Disk-safe uploads and controlled file access (FS-MED-01..09).
+  - name: Posts
+    description: Posts, likes, and reposts (FS-POST-01..08).
+  - name: Comments
+    description: Nested comments on posts (FS-CMT-01..07). Max depth 4 (root = 0).
+  - name: Feed
+    description: Friends news feed of posts and reposts (FS-FEED-01..06).
+  - name: Events
+    description: Instant and recurring training events, applications, and capacity (FS-EVT-01..13).
+  - name: Search
+    description: Parameterized people and event search (FS-SRCH-01..08).
+  - name: Suggestions
+    description: Personalized friend suggestions (FS-SUGG-01..07).
+  - name: Matching
+    description: Weekly buddy matching opt-in and proposed pair (FS-MATCH-01..03).
+  - name: Messaging
+    description: Private direct messages with text, images, and audio (FS-MSG-01..10).
+  - name: Admin
+    description: Staff back-office (FS-ADM-01..09, FS-ACCT-08/09). Members get NOT_FOUND.
+  - name: Reports
+    description: Member reports of users, posts, comments, or events (FS-ADM-07).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -30,6 +56,112 @@ paths:
     $ref: ./paths/auth.yaml#/refresh
   /auth/logout:
     $ref: ./paths/auth.yaml#/logout
+  /auth/password:
+    $ref: ./paths/auth.yaml#/password
+  /me/close:
+    $ref: ./paths/me.yaml#/close
+  /profiles/me:
+    $ref: ./paths/profiles.yaml#/me
+  /profiles/{handle}:
+    $ref: ./paths/profiles.yaml#/byHandle
+  /friendships:
+    $ref: ./paths/friendships.yaml#/collection
+  /friendships/{id}/accept:
+    $ref: ./paths/friendships.yaml#/accept
+  /friendships/{id}/decline:
+    $ref: ./paths/friendships.yaml#/decline
+  /friendships/{id}:
+    $ref: ./paths/friendships.yaml#/item
+  /blocks:
+    $ref: ./paths/blocks.yaml#/collection
+  /blocks/{userId}:
+    $ref: ./paths/blocks.yaml#/item
+  /media:
+    $ref: ./paths/media.yaml#/collection
+  /media/{id}/url:
+    $ref: ./paths/media.yaml#/url
+  /media/{id}:
+    $ref: ./paths/media.yaml#/item
+  /posts:
+    $ref: ./paths/posts.yaml#/collection
+  /posts/{id}:
+    $ref: ./paths/posts.yaml#/item
+  /posts/{id}/reposts:
+    $ref: ./paths/posts.yaml#/reposts
+  /posts/{id}/like:
+    $ref: ./paths/posts.yaml#/like
+  /posts/{id}/likes:
+    $ref: ./paths/posts.yaml#/likes
+  /posts/{id}/comments:
+    $ref: ./paths/comments.yaml#/onPost
+  /comments/{id}/replies:
+    $ref: ./paths/comments.yaml#/replies
+  /comments/{id}:
+    $ref: ./paths/comments.yaml#/item
+  /comments/{id}/like:
+    $ref: ./paths/comments.yaml#/like
+  /feed:
+    $ref: ./paths/feed.yaml#/collection
+  /events:
+    $ref: ./paths/events.yaml#/collection
+  /events/{id}:
+    $ref: ./paths/events.yaml#/item
+  /events/{id}/cancel:
+    $ref: ./paths/events.yaml#/cancel
+  /events/{id}/applications:
+    $ref: ./paths/events.yaml#/apply
+  /applications/{id}:
+    $ref: ./paths/applications.yaml#/item
+  /applications/{id}/accept:
+    $ref: ./paths/applications.yaml#/accept
+  /applications/{id}/decline:
+    $ref: ./paths/applications.yaml#/decline
+  /search/people:
+    $ref: ./paths/search.yaml#/people
+  /search/events:
+    $ref: ./paths/search.yaml#/events
+  /suggestions:
+    $ref: ./paths/suggestions.yaml#/collection
+  /suggestions/{userId}/dismiss:
+    $ref: ./paths/suggestions.yaml#/dismiss
+  /matching/opt-in:
+    $ref: ./paths/matching.yaml#/optIn
+  /matching/me:
+    $ref: ./paths/matching.yaml#/me
+  /conversations:
+    $ref: ./paths/conversations.yaml#/collection
+  /conversations/{id}/messages:
+    $ref: ./paths/conversations.yaml#/messages
+  /messages/{id}:
+    $ref: ./paths/messages.yaml#/item
+  /ws:
+    $ref: ./paths/ws.yaml#/gateway
+  /admin/users:
+    $ref: ./paths/admin-users.yaml#/collection
+  /admin/users/{id}/lock:
+    $ref: ./paths/admin-users.yaml#/lock
+  /admin/users/{id}/unlock:
+    $ref: ./paths/admin-users.yaml#/unlock
+  /admin/users/{id}/role:
+    $ref: ./paths/admin-users.yaml#/role
+  /admin/content/{type}/{id}/hide:
+    $ref: ./paths/admin-content.yaml#/hide
+  /admin/content/{type}/{id}/unhide:
+    $ref: ./paths/admin-content.yaml#/unhide
+  /admin/reports:
+    $ref: ./paths/admin-reports.yaml#/collection
+  /admin/reports/{id}/resolve:
+    $ref: ./paths/admin-reports.yaml#/resolve
+  /reports:
+    $ref: ./paths/reports.yaml#/collection
+  /admin/media:
+    $ref: ./paths/admin-media.yaml#/collection
+  /admin/fixtures:
+    $ref: ./paths/admin-fixtures.yaml#/generate
+  /admin/fixtures/reset:
+    $ref: ./paths/admin-fixtures.yaml#/reset
+  /admin/audit:
+    $ref: ./paths/admin-audit.yaml#/collection
 components:
   securitySchemes:
     bearerAuth:
@@ -48,10 +180,136 @@ components:
       $ref: ./components/schemas/requests/RegisterRequest.yaml
     LoginRequest:
       $ref: ./components/schemas/requests/LoginRequest.yaml
+    ChangePasswordRequest:
+      $ref: ./components/schemas/requests/ChangePasswordRequest.yaml
+    CloseAccountRequest:
+      $ref: ./components/schemas/requests/CloseAccountRequest.yaml
+    PatchProfileRequest:
+      $ref: ./components/schemas/requests/PatchProfileRequest.yaml
+    CreateFriendshipRequest:
+      $ref: ./components/schemas/requests/CreateFriendshipRequest.yaml
+    CreateBlockRequest:
+      $ref: ./components/schemas/requests/CreateBlockRequest.yaml
+    CreateMediaRequest:
+      $ref: ./components/schemas/requests/CreateMediaRequest.yaml
+    CreatePostRequest:
+      $ref: ./components/schemas/requests/CreatePostRequest.yaml
+    PatchPostRequest:
+      $ref: ./components/schemas/requests/PatchPostRequest.yaml
+    CreateCommentRequest:
+      $ref: ./components/schemas/requests/CreateCommentRequest.yaml
+    CreateEventRequest:
+      $ref: ./components/schemas/requests/CreateEventRequest.yaml
+    PatchEventRequest:
+      $ref: ./components/schemas/requests/PatchEventRequest.yaml
+    CreateEventApplicationRequest:
+      $ref: ./components/schemas/requests/CreateEventApplicationRequest.yaml
+    CancelEventRequest:
+      $ref: ./components/schemas/requests/CancelEventRequest.yaml
+    HideContentRequest:
+      $ref: ./components/schemas/requests/HideContentRequest.yaml
+    StaffReasonRequest:
+      $ref: ./components/schemas/requests/StaffReasonRequest.yaml
+    PatchUserRoleRequest:
+      $ref: ./components/schemas/requests/PatchUserRoleRequest.yaml
+    CreateReportRequest:
+      $ref: ./components/schemas/requests/CreateReportRequest.yaml
+    GenerateFixturesRequest:
+      $ref: ./components/schemas/requests/GenerateFixturesRequest.yaml
+    CreateConversationRequest:
+      $ref: ./components/schemas/requests/CreateConversationRequest.yaml
+    CreateMessageRequest:
+      $ref: ./components/schemas/requests/CreateMessageRequest.yaml
+    CreateMediaResponse:
+      $ref: ./components/schemas/responses/CreateMediaResponse.yaml
+    MediaUrlResponse:
+      $ref: ./components/schemas/responses/MediaUrlResponse.yaml
     RegisteredUser:
       $ref: ./components/schemas/entities/RegisteredUser.yaml
     AccessTokenResponse:
       $ref: ./components/schemas/responses/AccessTokenResponse.yaml
+    Profile:
+      $ref: ./components/schemas/entities/Profile.yaml
+    PreferredWindow:
+      $ref: ./components/schemas/entities/PreferredWindow.yaml
+    Friendship:
+      $ref: ./components/schemas/entities/Friendship.yaml
+    FriendshipPeer:
+      $ref: ./components/schemas/entities/FriendshipPeer.yaml
+    FriendshipPage:
+      $ref: ./components/schemas/entities/FriendshipPage.yaml
+    Post:
+      $ref: ./components/schemas/entities/Post.yaml
+    PostAuthor:
+      $ref: ./components/schemas/entities/PostAuthor.yaml
+    PostLiker:
+      $ref: ./components/schemas/entities/PostLiker.yaml
+    PostLikerPage:
+      $ref: ./components/schemas/entities/PostLikerPage.yaml
+    Comment:
+      $ref: ./components/schemas/entities/Comment.yaml
+    CommentPage:
+      $ref: ./components/schemas/entities/CommentPage.yaml
+    FeedItem:
+      $ref: ./components/schemas/entities/FeedItem.yaml
+    FeedPage:
+      $ref: ./components/schemas/entities/FeedPage.yaml
+    Event:
+      $ref: ./components/schemas/entities/Event.yaml
+    EventOccurrence:
+      $ref: ./components/schemas/entities/EventOccurrence.yaml
+    EventApplication:
+      $ref: ./components/schemas/entities/EventApplication.yaml
+    EventApplicant:
+      $ref: ./components/schemas/entities/EventApplicant.yaml
+    EventPage:
+      $ref: ./components/schemas/entities/EventPage.yaml
+    PeopleSearchHit:
+      $ref: ./components/schemas/entities/PeopleSearchHit.yaml
+    PeopleSearchPage:
+      $ref: ./components/schemas/entities/PeopleSearchPage.yaml
+    EventSearchHit:
+      $ref: ./components/schemas/entities/EventSearchHit.yaml
+    EventSearchPage:
+      $ref: ./components/schemas/entities/EventSearchPage.yaml
+    Suggestion:
+      $ref: ./components/schemas/entities/Suggestion.yaml
+    SuggestionPage:
+      $ref: ./components/schemas/entities/SuggestionPage.yaml
+    MatchingPeer:
+      $ref: ./components/schemas/entities/MatchingPeer.yaml
+    MatchingDraftEvent:
+      $ref: ./components/schemas/entities/MatchingDraftEvent.yaml
+    MatchingMe:
+      $ref: ./components/schemas/entities/MatchingMe.yaml
+    Conversation:
+      $ref: ./components/schemas/entities/Conversation.yaml
+    ConversationPeer:
+      $ref: ./components/schemas/entities/ConversationPeer.yaml
+    ConversationPage:
+      $ref: ./components/schemas/entities/ConversationPage.yaml
+    Message:
+      $ref: ./components/schemas/entities/Message.yaml
+    MessagePage:
+      $ref: ./components/schemas/entities/MessagePage.yaml
+    AdminUser:
+      $ref: ./components/schemas/entities/AdminUser.yaml
+    AdminUserPage:
+      $ref: ./components/schemas/entities/AdminUserPage.yaml
+    Report:
+      $ref: ./components/schemas/entities/Report.yaml
+    ReportPage:
+      $ref: ./components/schemas/entities/ReportPage.yaml
+    AuditEvent:
+      $ref: ./components/schemas/entities/AuditEvent.yaml
+    AuditEventPage:
+      $ref: ./components/schemas/entities/AuditEventPage.yaml
+    AdminMedia:
+      $ref: ./components/schemas/entities/AdminMedia.yaml
+    AdminMediaPage:
+      $ref: ./components/schemas/entities/AdminMediaPage.yaml
+    Page:
+      $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:
       $ref: ./components/schemas/entities/ErrorResponse.yaml
     ErrorDetail:

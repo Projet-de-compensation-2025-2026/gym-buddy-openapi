@@ -1,0 +1,23 @@
+type: object
+additionalProperties: false
+description: |
+  FS-POST-01, FS-POST-02. Text is 1–2000 characters. Body may be empty when
+  1–4 image `mediaIds` are attached. Empty body and no media is VALIDATION.
+  Default visibility is `friends`. Video is out of scope.
+properties:
+  body:
+    type: [string, "null"]
+    maxLength: 2000
+  visibility:
+    type: string
+    enum: [friends, public]
+    default: friends
+  mediaIds:
+    type: array
+    maxItems: 4
+    items:
+      type: string
+      format: uuid
+    description: |
+      Ready `kind=post` image media owned by the caller. Max 4. Too many,
+      unknown, not ready, wrong kind, or not owned is VALIDATION.

@@ -1,0 +1,61 @@
+collection:
+  post:
+    operationId: postReports
+    tags: [Reports]
+    summary: Report a user, post, comment, or event
+    description: |
+      FS-ADM-07. Authenticated member. Body `{ targetType, targetId, reason }`.
+      Unknown or not-visible target is NOT_FOUND. Duplicate open report by the
+      same reporter on the same target is CONFLICT.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateReportRequest.yaml
+          examples:
+            post:
+              value:
+                targetType: post
+                targetId: 00000000-0000-4000-8000-000000000001
+                reason: spam / solicitation
+    responses:
+      "201":
+        description: Report created.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Report.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown or not-visible target (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Duplicate open report (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Missing reason or invalid targetType (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

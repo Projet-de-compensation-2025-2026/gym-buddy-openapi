@@ -1,0 +1,40 @@
+gateway:
+  get:
+    operationId: getWs
+    tags: [Messaging]
+    summary: WebSocket upgrade for live messages
+    description: |
+      FS-MSG-07. HTTP GET upgrades to WebSocket at `/api/v1/ws`. Authenticate
+      with `Authorization: Bearer` (same access JWT as REST) or
+      `access_token` query for browsers that cannot set the handshake header.
+      After auth the server joins `user:{id}`. Do not trust client-sent room
+      names. Events (JSON text frames): `message.created`, `message.deleted`,
+      `conversation.updated`. Persistence is HTTP-first: a dropped socket
+      never loses a row; the client polls
+      `GET /conversations/{id}/messages?before=` every 10 s while the socket
+      is closed. Optional Redis presence is out of scope. No group chat.
+    parameters:
+      - name: access_token
+        in: query
+        required: false
+        description: |
+          Access JWT when the client cannot set `Authorization` on the
+          WebSocket handshake (browsers). Same token as REST Bearer.
+        schema:
+          type: string
+          minLength: 1
+    responses:
+      "101":
+        description: Switching Protocols. WebSocket session established.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "426":
+        description: Regular HTTP without Upgrade. Use the WebSocket handshake.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

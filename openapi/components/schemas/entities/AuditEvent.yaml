@@ -1,0 +1,44 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - actorId
+  - actorHandle
+  - action
+  - targetType
+  - targetId
+  - at
+description: |
+  Append-only staff mutation (FS-ADM-06). `reason` is required on hide.
+properties:
+  id:
+    type: string
+    format: uuid
+  actorId:
+    type: string
+    format: uuid
+  actorHandle:
+    type: string
+  action:
+    type: string
+    enum:
+      - lock_user
+      - unlock_user
+      - change_role
+      - hide_content
+      - unhide_content
+      - resolve_report
+      - generate_fixtures
+      - reset_fixtures
+  targetType:
+    type: string
+    enum: [user, post, comment, event, media, report, fixtures]
+  targetId:
+    type: string
+    format: uuid
+  reason:
+    type: [string, "null"]
+    maxLength: 1000
+  at:
+    type: string
+    format: date-time

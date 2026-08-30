@@ -1,0 +1,113 @@
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteApplicationsId
+    tags: [Events]
+    summary: Withdraw an application
+    description: |
+      FS-EVT-10. Applicant only, while `pending` or `accepted` and before start.
+      Frees a seat if accepted. Other callers get NOT_FOUND.
+    responses:
+      "204":
+        description: Application withdrawn.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the applicant (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Occurrence already started (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+accept:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postApplicationsIdAccept
+    tags: [Events]
+    summary: Accept a pending application
+    description: |
+      FS-EVT-06, FS-EVT-07. Organizer only. Transactional seat check
+      (`SELECT FOR UPDATE` or equivalent) on the occurrence. When accepted
+      count reaches capacity, further accepts are CONFLICT. Two concurrent
+      last-seat accepts yield exactly one `accepted` and one CONFLICT.
+      Non-organizer callers get NOT_FOUND.
+    responses:
+      "200":
+        description: Application accepted.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/EventApplication.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the organizer (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Capacity reached (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              full:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: event is full
+decline:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postApplicationsIdDecline
+    tags: [Events]
+    summary: Decline a pending application
+    description: FS-EVT-06. Organizer only. Sets status declined. Non-organizer is NOT_FOUND.
+    responses:
+      "204":
+        description: Application declined.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the organizer (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

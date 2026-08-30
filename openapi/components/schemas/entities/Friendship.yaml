@@ -1,0 +1,31 @@
+type: object
+additionalProperties: false
+required: [id, requesterId, addresseeId, status, createdAt, peer, direction]
+description: |
+  Directed friendship or block row (FS-FRND). After accept the pair is symmetric
+  (FS-FRND-08). `peer` and `direction` are relative to the authenticated caller.
+properties:
+  id:
+    type: string
+    format: uuid
+  requesterId:
+    type: string
+    format: uuid
+  addresseeId:
+    type: string
+    format: uuid
+  status:
+    type: string
+    enum: [pending, accepted, declined, blocked]
+  createdAt:
+    type: string
+    format: date-time
+  respondedAt:
+    type: [string, "null"]
+    format: date-time
+  direction:
+    type: string
+    enum: [incoming, outgoing]
+    description: incoming = caller is addressee; outgoing = caller is requester.
+  peer:
+    $ref: ./FriendshipPeer.yaml

@@ -1,0 +1,39 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - reporterId
+  - reporterHandle
+  - targetType
+  - targetId
+  - reason
+  - status
+  - createdAt
+description: |
+  Member report of a user, post, comment, or event (FS-ADM-07). Staff see the
+  queue; members only create.
+properties:
+  id:
+    type: string
+    format: uuid
+  reporterId:
+    type: string
+    format: uuid
+  reporterHandle:
+    type: string
+  targetType:
+    type: string
+    enum: [user, post, comment, event]
+  targetId:
+    type: string
+    format: uuid
+  reason:
+    type: string
+    minLength: 1
+    maxLength: 1000
+  status:
+    type: string
+    enum: [open, resolved]
+  createdAt:
+    type: string
+    format: date-time

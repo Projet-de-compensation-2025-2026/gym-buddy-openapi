@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of conversation messages (FS-MSG-06). Newest first.
+  `page.next` is opaque; pass it as `before` for the next page.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Message.yaml
+  page:
+    $ref: ./Page.yaml

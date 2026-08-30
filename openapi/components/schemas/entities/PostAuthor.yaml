@@ -1,0 +1,16 @@
+type: object
+additionalProperties: false
+required: [userId, handle, displayName]
+description: Author shown on a post card (FS-POST).
+properties:
+  userId:
+    type: string
+    format: uuid
+  handle:
+    type: string
+    minLength: 1
+  displayName:
+    type: string
+  avatarMediaId:
+    type: [string, "null"]
+    format: uuid

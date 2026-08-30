@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of event search hits (FS-SRCH-05). `page.next` is opaque; pass
+  it as `before`. Default size 20, max 50.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./EventSearchHit.yaml
+  page:
+    $ref: ./Page.yaml

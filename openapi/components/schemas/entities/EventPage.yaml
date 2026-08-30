@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: |
+  Cursor page of events the caller may see (FS-EVT). Newest upcoming first.
+  `page.next` is opaque; pass it as `after`.
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Event.yaml
+  page:
+    $ref: ./Page.yaml

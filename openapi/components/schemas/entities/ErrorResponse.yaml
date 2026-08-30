@@ -12,8 +12,11 @@ properties:
         enum:
           - UNAUTHENTICATED
           - FORBIDDEN
+          - NOT_FOUND
           - CONFLICT
           - VALIDATION
+          - PAYLOAD_TOO_LARGE
+          - QUOTA_EXCEEDED
       message:
         type: string
       details:

@@ -1,0 +1,314 @@
+collection:
+  get:
+    operationId: getEvents
+    tags: [Events]
+    summary: List visible events
+    description: |
+      FS-EVT list. Visibility-filtered upcoming sessions. `kind=instant|recurring`
+      optional. Window defaults to now .. now+90 days. Cursor `after` is opaque
+      (`page.next`). Default size 20, max 50. Friends-only and private events
+      the caller may not see are omitted (no existence leak).
+    parameters:
+      - name: kind
+        in: query
+        schema:
+          type: string
+          enum: [instant, recurring]
+      - name: from
+        in: query
+        description: Window start (UTC). Defaults to now.
+        schema:
+          type: string
+          format: date-time
+      - name: until
+        in: query
+        description: Window end (UTC). Defaults to from + 90 days.
+        schema:
+          type: string
+          format: date-time
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of visible events.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/EventPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 or invalid window (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  post:
+    operationId: postEvents
+    tags: [Events]
+    summary: Create an instant or recurring event
+    description: |
+      FS-EVT-01..04. Authenticated member. Instant when `recurrence` is empty.
+      Recurring MVP `FREQ=WEEKLY;BYDAY=...` with optional `UNTIL`. Start in the
+      past is VALIDATION. Invalid RRULE is VALIDATION. Cover `coverMediaId` must
+      be a ready `kind=event` image owned by the caller.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateEventRequest.yaml
+          examples:
+            instantPublic:
+              value:
+                title: Morning Sprint Intervals
+                activity: Track & Field
+                place: Downtown Stadium
+                startsAt: "2026-09-01T06:30:00Z"
+                durationMin: 45
+                visibility: public
+                capacity: 3
+            recurringFriends:
+              value:
+                title: Heavy Lifts Crew
+                activity: Powerlifting
+                place: Iron Works Gym
+                startsAt: "2026-09-01T18:00:00Z"
+                durationMin: 90
+                visibility: friends
+                capacity: 5
+                recurrence: FREQ=WEEKLY;BYDAY=TU
+                tags: [Lower Body, Strength, Squats, Deadlifts]
+    responses:
+      "201":
+        description: Event created, including 90-day occurrences.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Event.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Start in the past, bad RRULE, or invalid payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getEventsId
+    tags: [Events]
+    summary: Read an event and its 90-day occurrences
+    description: |
+      FS-EVT-03, FS-EVT-12, FS-EVT-13. `canView`: organizer; `public` any
+      member; `friends` accepted friends; `private` invitees and accepted
+      participants. Past occurrences stay readable to participants. Organizer
+      also receives `pendingApplicants` ordered by matching score. Unknown,
+      hidden, or not visible is NOT_FOUND.
+    responses:
+      "200":
+        description: Visible event with materialised occurrences.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Event.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown or not visible (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  patch:
+    operationId: patchEventsId
+    tags: [Events]
+    summary: Update place or time
+    description: |
+      FS-EVT-09. Organizer only, before start. If anyone is accepted, sets
+      `updatedAfterAccept`. Other callers get NOT_FOUND.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/PatchEventRequest.yaml
+    responses:
+      "200":
+        description: Updated event.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Event.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the organizer (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Start in the past or invalid payload (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+cancel:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postEventsIdCancel
+    tags: [Events]
+    summary: Cancel a series or one occurrence
+    description: |
+      FS-EVT-08. Organizer only. Body `occurrenceId` cancels that occurrence;
+      omit it to cancel the series. Applications on cancelled occurrences
+      become `cancelled`. Other callers get NOT_FOUND.
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CancelEventRequest.yaml
+    responses:
+      "200":
+        description: Cancelled event (series or remaining occurrences).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Event.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id, unknown occurrence, or caller is not the organizer (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+apply:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postEventsIdApplications
+    tags: [Events]
+    summary: Apply to an occurrence
+    description: |
+      FS-EVT-05, FS-EVT-11, FS-EVT-12. Caller must `canView`. Once per
+      occurrence. Organizer applying to their own event is FORBIDDEN. Past
+      occurrence is VALIDATION. Double apply is CONFLICT. Stranger on
+      friends-only or private is NOT_FOUND.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateEventApplicationRequest.yaml
+    responses:
+      "201":
+        description: Application pending.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/EventApplication.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Organizer applied to their own event (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown, not visible, or not a friend on friends-only (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Already applied to this occurrence (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              duplicate:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: already applied
+      "422":
+        description: Past occurrence or missing occurrenceId on a series (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

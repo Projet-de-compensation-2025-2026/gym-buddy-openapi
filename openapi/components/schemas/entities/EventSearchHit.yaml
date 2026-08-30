@@ -1,0 +1,52 @@
+type: object
+additionalProperties: false
+required:
+  - id
+  - title
+  - activity
+  - place
+  - startsAt
+  - remainingSeats
+  - capacity
+  - organizer
+description: |
+  Event search card (FS-SRCH-01..08). Only events the caller may see.
+  Hidden, cancelled, and (when `remaining=true`) full events are omitted.
+  `matchReason` is present only when `debug=true` (staff / tests).
+properties:
+  id:
+    type: string
+    format: uuid
+  title:
+    type: string
+    minLength: 1
+    maxLength: 120
+  activity:
+    type: string
+    minLength: 2
+    maxLength: 32
+  place:
+    type: string
+    minLength: 1
+    maxLength: 200
+  startsAt:
+    type: string
+    format: date-time
+    description: Next upcoming occurrence start (UTC), or series DTSTART if none.
+  remainingSeats:
+    type: integer
+    minimum: 0
+  capacity:
+    type: integer
+    minimum: 1
+    maximum: 100
+  organizer:
+    $ref: ./PostAuthor.yaml
+  distanceKm:
+    type: [number, "null"]
+    format: double
+    minimum: 0
+    description: Great-circle kilometres from the viewer when both have coordinates.
+  matchReason:
+    type: [string, "null"]
+    description: Debug-only. Which predicates matched (text, activity, geo, social, remaining).

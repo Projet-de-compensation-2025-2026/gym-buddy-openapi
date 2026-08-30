@@ -1,0 +1,219 @@
+collection:
+  get:
+    operationId: getConversations
+    tags: [Messaging]
+    summary: List the caller's inbox
+    description: |
+      FS-MSG-09. Direct conversations the caller belongs to, ordered by last
+      message time (newest first). Each row includes the peer, last message
+      preview, and unread count. Cursor `before` is opaque (`page.next`).
+      Default size 20, max 50. Empty inbox is an empty page.
+    parameters:
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of conversations.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ConversationPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  post:
+    operationId: postConversations
+    tags: [Messaging]
+    summary: Open a direct conversation
+    description: |
+      FS-MSG-01, FS-MSG-02. Body `{ userId }`. Accepted friends only. One
+      conversation per unordered pair (idempotent: returns the existing row).
+      Non-friends and blocked peers are FORBIDDEN. Self is VALIDATION.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateConversationRequest.yaml
+          examples:
+            friend:
+              value:
+                userId: 00000000-0000-4000-8000-0000000000b1
+    responses:
+      "201":
+        description: Conversation created or the existing pair returned.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Conversation.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Not friends, or either side has blocked the other (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Missing userId or self (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+messages:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    operationId: getConversationsIdMessages
+    tags: [Messaging]
+    summary: List messages in a conversation
+    description: |
+      FS-MSG-06. Cursor `before` is opaque (`page.next`). Newest first.
+      Default size 20, max 50. Marks the thread read for the caller (unread
+      count resets). Only participants. Strangers get NOT_FOUND. Tombstoned
+      messages stay as placeholders. History remains after a block.
+    parameters:
+      - name: before
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of messages.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/MessagePage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown conversation or caller is not a participant (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: size greater than 50 (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  post:
+    operationId: postConversationsIdMessages
+    tags: [Messaging]
+    summary: Send a message
+    description: |
+      FS-MSG-03, FS-MSG-04, FS-MSG-05, FS-MSG-07, FS-MSG-10. Persistence
+      first: write the row, then fan-out `message.created` on `/ws`. A dropped
+      socket never loses the message. `type=text` body 1–4000 characters.
+      `type=image` or `type=audio` attaches one ready `mediaId` (`kind=message`,
+      types/size FS-MED). Friends only; a block stops send (FORBIDDEN) while
+      history GET still works. Strangers get NOT_FOUND.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateMessageRequest.yaml
+          examples:
+            text:
+              value:
+                type: text
+                body: Ready for deadlifts?
+            image:
+              value:
+                type: image
+                mediaId: 00000000-0000-4000-8000-0000000000m1
+            audio:
+              value:
+                type: audio
+                mediaId: 00000000-0000-4000-8000-0000000000m2
+    responses:
+      "201":
+        description: Message persisted (and published if the peer is connected).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Message.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Not friends, or either side has blocked the other (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown conversation or caller is not a participant (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Empty/oversize text, bad type, or unusable media (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
