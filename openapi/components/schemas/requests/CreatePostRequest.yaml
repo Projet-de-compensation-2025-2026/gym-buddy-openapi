@@ -15,7 +15,6 @@ properties:
   mediaIds:
     type: array
     maxItems: 4
-    uniqueItems: true
     items:
       type: string
       format: uuid
