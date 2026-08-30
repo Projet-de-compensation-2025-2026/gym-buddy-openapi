@@ -7,7 +7,10 @@ properties:
   handle:
     type: string
     minLength: 1
-    description: Unique public identifier, case-insensitive (FS-ACCT-02).
+    pattern: "^[^@]+$"
+    description: |
+      Unique public identifier, case-insensitive (FS-ACCT-02). Must not contain
+      `@` and must not equal the account email (VALIDATION).
   displayName:
     type: string
     minLength: 1

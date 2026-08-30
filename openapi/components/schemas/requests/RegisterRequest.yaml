@@ -9,7 +9,10 @@ properties:
   handle:
     type: string
     minLength: 1
-    description: Unique public identifier, case-insensitive.
+    pattern: "^[^@]+$"
+    description: |
+      Unique public identifier, case-insensitive. Must not contain `@` and
+      must not equal `email` (VALIDATION).
   password:
     type: string
     format: password

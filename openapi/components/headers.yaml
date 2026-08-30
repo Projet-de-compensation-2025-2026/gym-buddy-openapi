@@ -1,14 +1,16 @@
 SetRefreshCookie:
   description: |
-    Refresh JWT. HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth.
+    Refresh JWT. HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth.
+    SameSite=None so a credentialed GitHub Pages XHR can send the cookie.
+    Partitioned (CHIPS) for Chromium third-party cookie partitions.
     The access token is never set as a cookie.
   schema:
     type: string
     examples:
-      - refresh=eyJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJyZWZyZXNoIn0.example; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; Max-Age=1209600
+      - refresh=eyJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJyZWZyZXNoIn0.example; HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth; Max-Age=1209600
 ClearRefreshCookie:
   description: Clears the refresh cookie after the jti is denylisted in Redis.
   schema:
     type: string
     examples:
-      - refresh=; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; Max-Age=0
+      - refresh=; HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth; Max-Age=0

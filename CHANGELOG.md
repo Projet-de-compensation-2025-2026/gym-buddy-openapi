@@ -11,6 +11,8 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Refresh cookie: `HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth` so a GitHub Pages credentialed XHR can send it (ticket **#89**). Access JWT stays out of cookies.
+- Register and profile-handle patch: handle pattern `^[^@]+$` — handle is not an email (ticket **#103**). Equal-to-email remains a service `VALIDATION`.
 - CI accepts `package.json` / `info.version` **1.y.z** now that tag **v1.0.0** exists. It still rejects 2.0.0+.
 
 ## [1.0.0] — 2026-08-30
