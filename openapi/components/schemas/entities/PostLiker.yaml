@@ -1,0 +1,19 @@
+type: object
+additionalProperties: false
+required: [userId, handle, displayName]
+description: Nominative liker. Visible to the post author only (FS-POST-08).
+properties:
+  userId:
+    type: string
+    format: uuid
+  handle:
+    type: string
+    minLength: 1
+  displayName:
+    type: string
+  avatarMediaId:
+    type: [string, "null"]
+    format: uuid
+  likedAt:
+    type: string
+    format: date-time
