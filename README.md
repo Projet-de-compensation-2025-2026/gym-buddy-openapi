@@ -4,7 +4,7 @@ Versioned OpenAPI 3.1 contract for Gym Buddies. This repository is the source of
 
 Product decisions: [`gym-buddy-documentation`](https://github.com/Projet-de-compensation-2025-2026/gym-buddy-documentation). Technical rules: [08-OpenAPI-contract.md](https://github.com/Projet-de-compensation-2025-2026/gym-buddy-documentation/blob/develop/40-Technical-specifications/08-OpenAPI-contract.md).
 
-`package.json` version and `info.version` stay **`0.1.0`** until Release cuts a later `0.1.x` tag. Do not invent `1.0.0`.
+`package.json` version and `info.version` match the current tag (**v1.0.0**). Feature PRs keep that pair in lockstep. Do not invent **2.0.0**.
 
 ## Depend on a version (tag)
 

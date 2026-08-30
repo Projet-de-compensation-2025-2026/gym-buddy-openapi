@@ -26,8 +26,8 @@ pkg = json.loads(Path("package.json").read_text(encoding="utf-8"))
 if pkg.get("name") != "gym-buddy-openapi":
     sys.exit(f"package.json name is {pkg.get('name')!r}, expected gym-buddy-openapi")
 ver = str(pkg.get("version", ""))
-if not re.fullmatch(r"0\.\d+\.\d+", ver):
-    sys.exit(f"package.json version {ver!r} must stay 0.y.z")
+if not re.fullmatch(r"[01]\.\d+\.\d+", ver):
+    sys.exit(f"package.json version {ver!r} must stay 0.y.z or 1.y.z")
 
 root = Path("openapi/openapi.yaml").read_text(encoding="utf-8")
 match = re.search(r"^  version:\s*(\S+)\s*$", root, flags=re.MULTILINE)

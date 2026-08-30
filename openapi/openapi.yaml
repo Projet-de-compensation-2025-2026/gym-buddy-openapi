@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Gym Buddy API
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Canonical HTTP contract. Edit this $ref tree. Generators read
     `openapi/openapi.yaml` on a tagged package checkout (or a develop SHA
@@ -144,6 +144,8 @@ paths:
     $ref: ./paths/admin-users.yaml#/unlock
   /admin/users/{id}/role:
     $ref: ./paths/admin-users.yaml#/role
+  /admin/content:
+    $ref: ./paths/admin-content.yaml#/collection
   /admin/content/{type}/{id}/hide:
     $ref: ./paths/admin-content.yaml#/hide
   /admin/content/{type}/{id}/unhide:
@@ -308,6 +310,10 @@ components:
       $ref: ./components/schemas/entities/AdminMedia.yaml
     AdminMediaPage:
       $ref: ./components/schemas/entities/AdminMediaPage.yaml
+    AdminContent:
+      $ref: ./components/schemas/entities/AdminContent.yaml
+    AdminContentPage:
+      $ref: ./components/schemas/entities/AdminContentPage.yaml
     Page:
       $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:
