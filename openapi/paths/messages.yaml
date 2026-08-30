@@ -1,0 +1,38 @@
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteMessagesId
+    tags: [Messaging]
+    summary: Tombstone a message
+    description: |
+      FS-MSG-08. Sender only, within 10 minutes of `createdAt`. Replaces the
+      body with `message deleted`, clears `mediaId` on the wire, and sets
+      `deleted`. Fans out `message.deleted`. After 10 minutes, or not the
+      sender, is FORBIDDEN. Unknown id or not a participant is NOT_FOUND.
+    responses:
+      "204":
+        description: Message tombstoned.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "403":
+        description: Not the sender, or the 10-minute window has closed (FORBIDDEN).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown message or caller is not a participant (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

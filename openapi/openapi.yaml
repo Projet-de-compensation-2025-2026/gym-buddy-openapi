@@ -37,6 +37,8 @@ tags:
     description: Personalized friend suggestions (FS-SUGG-01..07).
   - name: Matching
     description: Weekly buddy matching opt-in and proposed pair (FS-MATCH-01..03).
+  - name: Messaging
+    description: Private direct messages with text, images, and audio (FS-MSG-01..10).
   - name: Admin
     description: Staff back-office (FS-ADM-01..09, FS-ACCT-08/09). Members get NOT_FOUND.
   - name: Reports
@@ -126,6 +128,14 @@ paths:
     $ref: ./paths/matching.yaml#/optIn
   /matching/me:
     $ref: ./paths/matching.yaml#/me
+  /conversations:
+    $ref: ./paths/conversations.yaml#/collection
+  /conversations/{id}/messages:
+    $ref: ./paths/conversations.yaml#/messages
+  /messages/{id}:
+    $ref: ./paths/messages.yaml#/item
+  /ws:
+    $ref: ./paths/ws.yaml#/gateway
   /admin/users:
     $ref: ./paths/admin-users.yaml#/collection
   /admin/users/{id}/lock:
@@ -204,6 +214,10 @@ components:
       $ref: ./components/schemas/requests/PatchUserRoleRequest.yaml
     CreateReportRequest:
       $ref: ./components/schemas/requests/CreateReportRequest.yaml
+    CreateConversationRequest:
+      $ref: ./components/schemas/requests/CreateConversationRequest.yaml
+    CreateMessageRequest:
+      $ref: ./components/schemas/requests/CreateMessageRequest.yaml
     CreateMediaResponse:
       $ref: ./components/schemas/responses/CreateMediaResponse.yaml
     MediaUrlResponse:
@@ -266,6 +280,16 @@ components:
       $ref: ./components/schemas/entities/MatchingDraftEvent.yaml
     MatchingMe:
       $ref: ./components/schemas/entities/MatchingMe.yaml
+    Conversation:
+      $ref: ./components/schemas/entities/Conversation.yaml
+    ConversationPeer:
+      $ref: ./components/schemas/entities/ConversationPeer.yaml
+    ConversationPage:
+      $ref: ./components/schemas/entities/ConversationPage.yaml
+    Message:
+      $ref: ./components/schemas/entities/Message.yaml
+    MessagePage:
+      $ref: ./components/schemas/entities/MessagePage.yaml
     AdminUser:
       $ref: ./components/schemas/entities/AdminUser.yaml
     AdminUserPage:

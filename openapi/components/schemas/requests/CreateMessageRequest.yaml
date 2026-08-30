@@ -1,0 +1,19 @@
+type: object
+additionalProperties: false
+required: [type]
+description: |
+  FS-MSG-03..05. `type=text` requires `body` 1–4000 characters and no media.
+  `type=image` or `type=audio` requires one ready `mediaId` (`kind=message`;
+  image jpeg/png/webp or audio webm/mpeg, max 8 MiB, audio max 120 s).
+  Optional `body` on image is a caption (1–4000).
+properties:
+  type:
+    type: string
+    enum: [text, image, audio]
+  body:
+    type: [string, "null"]
+    minLength: 1
+    maxLength: 4000
+  mediaId:
+    type: [string, "null"]
+    format: uuid
