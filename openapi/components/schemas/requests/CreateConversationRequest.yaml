@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+required: [userId]
+description: |
+  FS-MSG-01. Open (or return) the direct conversation with this accepted
+  friend. Non-friends and blocked peers are FORBIDDEN. Self is VALIDATION.
+properties:
+  userId:
+    type: string
+    format: uuid

@@ -38,16 +38,16 @@ Ticket **#54** deletes the former checked-in `openapi/bundled.yaml`. It is **not
 
 ## Layout
 
-| Path                                      | Role                                                                                                                                                                          |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `package.json`                            | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`.                                                                                                                        |
-| `openapi/openapi.yaml`                    | Thin root. **Edit source and generator entry.**                                                                                                                               |
-| `openapi/paths/`                          | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`, `feed`, `events`, `applications`, `search`, `suggestions`, `matching`) |
-| `openapi/components/schemas/entities/`    | Shared entities (`HealthStatus`, `RegisteredUser`, `Profile`, `ErrorResponse`, …)                                                                                             |
-| `openapi/components/schemas/requests/`    | Request bodies (`RegisterRequest`, `LoginRequest`, `CreatePostRequest`, `PatchPostRequest`, …)                                                                                |
-| `openapi/components/schemas/responses/`   | Response bodies (`AccessTokenResponse`, `CreateMediaResponse`, `MediaUrlResponse`)                                                                                            |
-| `openapi/components/securitySchemes.yaml` | `bearerAuth`, `refreshCookie`                                                                                                                                                 |
-| `openapi/components/headers.yaml`         | Refresh `Set-Cookie` / clear-cookie headers                                                                                                                                   |
+| Path                                      | Role                                                                                                                                                                                                                 |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`                            | Versioned package (`0.1.0`). Consumers pin `…#v0.1.0`.                                                                                                                                                               |
+| `openapi/openapi.yaml`                    | Thin root. **Edit source and generator entry.**                                                                                                                                                                      |
+| `openapi/paths/`                          | Path items (`health`, `auth`, `me`, `profiles`, `friendships`, `blocks`, `media`, `posts`, `comments`, `feed`, `events`, `applications`, `search`, `suggestions`, `matching`, `conversations`, `messages`, `ws`)      |
+| `openapi/components/schemas/entities/`    | Shared entities (`HealthStatus`, `RegisteredUser`, `Profile`, `ErrorResponse`, …)                                                                                                                                    |
+| `openapi/components/schemas/requests/`    | Request bodies (`RegisterRequest`, `LoginRequest`, `CreatePostRequest`, `PatchPostRequest`, …)                                                                                                                       |
+| `openapi/components/schemas/responses/`   | Response bodies (`AccessTokenResponse`, `CreateMediaResponse`, `MediaUrlResponse`)                                                                                                                                   |
+| `openapi/components/securitySchemes.yaml` | `bearerAuth`, `refreshCookie`                                                                                                                                                                                        |
+| `openapi/components/headers.yaml`         | Refresh `Set-Cookie` / clear-cookie headers                                                                                                                                                                          |
 
 The tree is the edit format and the consumer input. The package / tagged checkout is how consumers see it.
 
@@ -70,6 +70,7 @@ Server prefix `/api/v1`:
 - `GET /search/people`, `GET /search/events`
 - `GET /suggestions`, `POST /suggestions/{userId}/dismiss`
 - `POST`/`DELETE /matching/opt-in`, `GET /matching/me`
+- `GET`/`POST /conversations`, `GET`/`POST /conversations/{id}/messages`, `DELETE /messages/{id}`, `GET /ws`
 
 ## Pipeline
 

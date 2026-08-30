@@ -1,0 +1,16 @@
+type: object
+additionalProperties: false
+required: [userId, handle, displayName]
+description: The other participant in a direct conversation, relative to the caller.
+properties:
+  userId:
+    type: string
+    format: uuid
+  handle:
+    type: string
+    minLength: 1
+  displayName:
+    type: string
+  avatarMediaId:
+    type: [string, "null"]
+    format: uuid
