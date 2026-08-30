@@ -19,6 +19,8 @@ tags:
     description: Sign-up, sign-in, refresh, log-out, password change, and close account (FS-ACCT-01..07).
   - name: Profiles
     description: Public and private member profiles (FS-PROF-01..07).
+  - name: Friends
+    description: Friend requests, accepted pairs, and blocks (FS-FRND-01..08).
 paths:
   /healthz:
     $ref: ./paths/health.yaml#/healthz
@@ -40,6 +42,18 @@ paths:
     $ref: ./paths/profiles.yaml#/me
   /profiles/{handle}:
     $ref: ./paths/profiles.yaml#/byHandle
+  /friendships:
+    $ref: ./paths/friendships.yaml#/collection
+  /friendships/{id}/accept:
+    $ref: ./paths/friendships.yaml#/accept
+  /friendships/{id}/decline:
+    $ref: ./paths/friendships.yaml#/decline
+  /friendships/{id}:
+    $ref: ./paths/friendships.yaml#/item
+  /blocks:
+    $ref: ./paths/blocks.yaml#/collection
+  /blocks/{userId}:
+    $ref: ./paths/blocks.yaml#/item
 components:
   securitySchemes:
     bearerAuth:
@@ -64,6 +78,10 @@ components:
       $ref: ./components/schemas/requests/CloseAccountRequest.yaml
     PatchProfileRequest:
       $ref: ./components/schemas/requests/PatchProfileRequest.yaml
+    CreateFriendshipRequest:
+      $ref: ./components/schemas/requests/CreateFriendshipRequest.yaml
+    CreateBlockRequest:
+      $ref: ./components/schemas/requests/CreateBlockRequest.yaml
     RegisteredUser:
       $ref: ./components/schemas/entities/RegisteredUser.yaml
     AccessTokenResponse:
@@ -72,6 +90,14 @@ components:
       $ref: ./components/schemas/entities/Profile.yaml
     PreferredWindow:
       $ref: ./components/schemas/entities/PreferredWindow.yaml
+    Friendship:
+      $ref: ./components/schemas/entities/Friendship.yaml
+    FriendshipPeer:
+      $ref: ./components/schemas/entities/FriendshipPeer.yaml
+    FriendshipPage:
+      $ref: ./components/schemas/entities/FriendshipPage.yaml
+    Page:
+      $ref: ./components/schemas/entities/Page.yaml
     ErrorResponse:
       $ref: ./components/schemas/entities/ErrorResponse.yaml
     ErrorDetail:

@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+required: [userId]
+description: |
+  FS-FRND-05. Blocker is stored as requester with status `blocked`. Reverse
+  pending requests are cancelled. Self-block is VALIDATION.
+properties:
+  userId:
+    type: string
+    format: uuid

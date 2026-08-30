@@ -10,6 +10,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Profiles: `GET`/`PATCH /profiles/me`, `GET /profiles/{handle}` (full vs private stub, FS-PROF-01..06). Ticket #59.
 - Password change: `POST /auth/password` (FS-ACCT-05). Ticket #59.
 - Close account: `POST /me/close` (FS-ACCT-07). Ticket #59.
+- Friendships and blocks: `GET`/`POST /friendships`, accept/decline/delete, `POST /blocks`, `DELETE /blocks/{userId}` (FS-FRND-01..08). Ticket #60.
 - `ErrorResponse` code `NOT_FOUND` for unknown or closed handles.
 
 ### Changed

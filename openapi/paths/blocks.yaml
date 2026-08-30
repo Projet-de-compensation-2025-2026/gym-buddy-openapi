@@ -1,0 +1,79 @@
+collection:
+  post:
+    operationId: postBlocks
+    tags: [Friends]
+    summary: Block a member
+    description: |
+      FS-FRND-05. Upserts status `blocked` with the caller as requester.
+      Reverse pending requests are cancelled. Accepted friendship is removed.
+      Block hides both from each other's feed, search ranking, and suggestions,
+      and prevents new requests or DMs. Self-block is VALIDATION. Missing or
+      closed targets are NOT_FOUND.
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateBlockRequest.yaml
+          examples:
+            byId:
+              value:
+                userId: 11111111-1111-1111-1111-111111111111
+    responses:
+      "204":
+        description: Target is blocked.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Target missing or closed (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "422":
+        description: Self-block (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteBlocksUserId
+    tags: [Friends]
+    summary: Unblock a member
+    description: FS-FRND-05. Removes the block row. Unknown or not-blocked is NOT_FOUND.
+    responses:
+      "204":
+        description: Block removed.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: No block from the caller to this user (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml

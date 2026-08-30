@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+required: [data, page]
+description: Cursor page of friendships (FS-FRND-07).
+properties:
+  data:
+    type: array
+    items:
+      $ref: ./Friendship.yaml
+  page:
+    $ref: ./Page.yaml

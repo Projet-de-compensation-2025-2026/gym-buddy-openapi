@@ -1,0 +1,211 @@
+collection:
+  get:
+    operationId: getFriendships
+    tags: [Friends]
+    summary: List friendships
+    description: |
+      FS-FRND-07. `filter=accepted` (default) is visible to the owner and to
+      accepted friends of that owner. `filter=incoming` and `filter=outgoing`
+      are owner-only pending lists. Optional `handle` lists another member's
+      accepted friends (caller must be owner or an accepted friend). Strangers
+      and blocked callers get NOT_FOUND.
+    parameters:
+      - name: filter
+        in: query
+        schema:
+          type: string
+          enum: [accepted, incoming, outgoing]
+          default: accepted
+      - name: handle
+        in: query
+        description: Whose accepted list to read. Defaults to the caller.
+        schema:
+          type: string
+          minLength: 1
+      - name: after
+        in: query
+        description: Opaque cursor from a previous `page.next`.
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+    responses:
+      "200":
+        description: Page of friendships.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/FriendshipPage.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown handle, or caller may not list this collection (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+  post:
+    operationId: postFriendships
+    tags: [Friends]
+    summary: Send a friend request
+    description: |
+      FS-FRND-01, FS-FRND-06. Approval required; no silent follow. Self-friend
+      is VALIDATION. Duplicate pending or already-friends is CONFLICT. Target
+      locked, closed, missing, or blocked is NOT_FOUND (no existence leak).
+    parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        description: Optional. Replays within 24 h return the original result.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/requests/CreateFriendshipRequest.yaml
+          examples:
+            byHandle:
+              value:
+                handle: jordan_squats
+    responses:
+      "201":
+        description: Pending friend request created.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Friendship.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Target missing, locked, closed, or blocked (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "409":
+        description: Duplicate pending request or already friends (CONFLICT).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+            examples:
+              duplicate:
+                value:
+                  error:
+                    code: CONFLICT
+                    message: friendship already exists
+      "422":
+        description: Self-friend or neither handle nor userId (VALIDATION).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+accept:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postFriendshipsIdAccept
+    tags: [Friends]
+    summary: Accept a friend request
+    description: |
+      FS-FRND-02, FS-FRND-08. Addressee only. After accept the pair is
+      symmetric and unlocks private profiles. Non-addressee callers get NOT_FOUND.
+    responses:
+      "200":
+        description: Friendship accepted.
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/Friendship.yaml
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the addressee (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+decline:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  post:
+    operationId: postFriendshipsIdDecline
+    tags: [Friends]
+    summary: Decline a friend request
+    description: FS-FRND-02. Addressee only. Sets status declined. Non-addressee is NOT_FOUND.
+    responses:
+      "204":
+        description: Request declined.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not the addressee (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+item:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  delete:
+    operationId: deleteFriendshipsId
+    tags: [Friends]
+    summary: Cancel a pending request or unfriend
+    description: |
+      FS-FRND-03, FS-FRND-04. Requester may cancel pending. Either accepted
+      friend may unfriend (row deleted). Other callers get NOT_FOUND.
+    responses:
+      "204":
+        description: Row removed.
+      "401":
+        description: Missing or invalid access token (UNAUTHENTICATED).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
+      "404":
+        description: Unknown id or caller is not a party (NOT_FOUND).
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/entities/ErrorResponse.yaml
