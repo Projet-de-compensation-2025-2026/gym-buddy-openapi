@@ -214,6 +214,8 @@ components:
       $ref: ./components/schemas/requests/PatchUserRoleRequest.yaml
     CreateReportRequest:
       $ref: ./components/schemas/requests/CreateReportRequest.yaml
+    GenerateFixturesRequest:
+      $ref: ./components/schemas/requests/GenerateFixturesRequest.yaml
     CreateConversationRequest:
       $ref: ./components/schemas/requests/CreateConversationRequest.yaml
     CreateMessageRequest:
