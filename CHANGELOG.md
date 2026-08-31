@@ -9,6 +9,12 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+## [1.1.1] — 2026-08-31
+
+### Added
+
+### Changed
+
 - `PATCH /profiles/me` merge semantics: omitted fields stay unchanged; JSON `null` clears nullable scalars; `sports: []` / `preferredWindows: []` clear those lists. Unknown `experienceLevel` is VALIDATION (ticket **#119**, FS-PROF-02, FS-PROF-06).
 
 ## [1.1.0] — 2026-08-30
@@ -63,6 +69,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Package consumers pin a git tag and generate from `openapi/openapi.yaml` (the `$ref` tree). That is the target SoT. `openapi/bundled.yaml` stays checked in as today’s `gym-buddy-service` fetch file until ticket #47. Pin a tag, not a raw `develop` SHA.
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi
+[1.1.1]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.0.0
 [0.1.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v0.1.0
