@@ -24,8 +24,10 @@ me:
     summary: Update the signed-in member's profile
     description: |
       Owner-only (FS-PROF-02, FS-PROF-06). Nobody else can edit; staff lock the
-      account instead. Handle must stay unique (FS-ACCT-02). Invalid sports,
-      windows, or experience is VALIDATION.
+      account instead. Handle must stay unique (FS-ACCT-02). JSON merge: omitted
+      fields stay unchanged (a visibility-only body does not clear sports,
+      windows, bio, city, or coords). Invalid sports, windows, or experience
+      (including unknown `experienceLevel`) is VALIDATION.
     requestBody:
       required: true
       content:
@@ -33,6 +35,10 @@ me:
           schema:
             $ref: ../components/schemas/requests/PatchProfileRequest.yaml
           examples:
+            visibilityOnly:
+              summary: Omitted arrays and scalars stay unchanged
+              value:
+                visibility: private
             publicBio:
               value:
                 displayName: Alex

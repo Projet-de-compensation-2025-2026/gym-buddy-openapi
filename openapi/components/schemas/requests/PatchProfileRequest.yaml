@@ -1,8 +1,12 @@
 type: object
 additionalProperties: false
 description: |
-  Owner-only partial update (FS-PROF-02, FS-PROF-06). Omitted fields stay unchanged.
+  Owner-only partial update (FS-PROF-02, FS-PROF-06). JSON merge: omitted fields
+  stay unchanged. JSON `null` on a nullable scalar (bio, city, lat, lng,
+  experienceLevel, avatarMediaId) clears it. Send `sports: []` or
+  `preferredWindows: []` to clear those lists; omit the key to keep them.
   Handle change must remain unique (FS-ACCT-02). Avatar bytes are the media ticket.
+  Unknown `experienceLevel` values are VALIDATION, not silently null.
 properties:
   handle:
     type: string
@@ -26,9 +30,13 @@ properties:
       type: string
       minLength: 2
       maxLength: 32
+    description: Omitted keeps the current list. `[]` clears it.
   experienceLevel:
     type: [string, "null"]
-    enum: [beginner, intermediate, advanced, null]
+    enum: [beginner, intermediate, advanced]
+    description: |
+      Omitted keeps the current value. JSON null clears it. Values other than
+      beginner, intermediate, or advanced are VALIDATION.
   city:
     type: [string, "null"]
   lat:
@@ -46,6 +54,7 @@ properties:
     maxItems: 14
     items:
       $ref: ../entities/PreferredWindow.yaml
+    description: Omitted keeps the current list. `[]` clears it.
   avatarMediaId:
     type: [string, "null"]
     format: uuid

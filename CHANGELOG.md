@@ -9,6 +9,8 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- `PATCH /profiles/me` merge semantics: omitted fields stay unchanged; JSON `null` clears nullable scalars; `sports: []` / `preferredWindows: []` clear those lists. Unknown `experienceLevel` is VALIDATION (ticket **#119**, FS-PROF-02, FS-PROF-06).
+
 ## [1.1.0] — 2026-08-30
 
 ### Added
