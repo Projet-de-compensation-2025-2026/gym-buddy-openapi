@@ -132,6 +132,14 @@ item:
   get:
     operationId: getEventsId
     tags: [Events]
+    parameters:
+      - name: occurrenceId
+        in: query
+        required: false
+        description: Selects the occurrence used for remainingSeats, viewerApplication, and the organizer pendingApplicants queue. Defaults to the next upcoming occurrence. Unknown or unrelated occurrence returns NOT_FOUND.
+        schema:
+          type: string
+          format: uuid
     summary: Read an event and its 90-day occurrences
     description: |
       FS-EVT-03, FS-EVT-12, FS-EVT-13. `canView`: organizer; `public` any
