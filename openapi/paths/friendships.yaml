@@ -6,7 +6,9 @@ collection:
     description: |
       FS-FRND-07. `filter=accepted` (default) is visible to the owner and to
       accepted friends of that owner. `filter=incoming` and `filter=outgoing`
-      are owner-only pending lists. Optional `handle` lists another member's
+      are owner-only pending lists. `filter=blocked` is an owner-only list of
+      blocks created by the caller; it never reveals who blocked the caller.
+      Optional `handle` lists another member's
       accepted friends (caller must be owner or an accepted friend). Strangers
       and blocked callers get NOT_FOUND.
     parameters:
@@ -14,7 +16,7 @@ collection:
         in: query
         schema:
           type: string
-          enum: [accepted, incoming, outgoing]
+          enum: [accepted, incoming, outgoing, blocked]
           default: accepted
       - name: handle
         in: query
