@@ -9,6 +9,12 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+## [1.2.0] — 2026-09-14
+
+### Added
+
+### Changed
+
 ## [1.1.1] — 2026-08-31
 
 ### Added
@@ -69,6 +75,7 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - Package consumers pin a git tag and generate from `openapi/openapi.yaml` (the `$ref` tree). That is the target SoT. `openapi/bundled.yaml` stays checked in as today’s `gym-buddy-service` fetch file until ticket #47. Pin a tag, not a raw `develop` SHA.
 
 [Unreleased]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi
+[1.2.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.2.0
 [1.1.1]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Projet-de-compensation-2025-2026/gym-buddy-openapi/releases/tag/v1.0.0

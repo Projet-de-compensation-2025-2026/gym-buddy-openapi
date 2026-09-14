@@ -29,13 +29,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version && format('refs/tags/v{0}', inputs.version) || github.ref }}
 
       - name: Stage spec
         run: |
           mkdir -p _site
           cp -a openapi/. _site/
           if [[ -f _site/openapi.yaml ]]; then
-            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Gym Buddy API</title><h1>Gym Buddy API</h1><p>Generators: <a href="openapi.yaml">openapi.yaml</a> ($ref tree). Pin a git tag such as <code>v0.1.0</code>.</p>' > _site/index.html
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Gym Buddy API</title><h1>Gym Buddy API</h1><p>Generators: <a href="openapi.yaml">openapi.yaml</a> ($ref tree). Pin a published release tag or reviewed commit.</p>' > _site/index.html
           fi
 
       - name: Upload Pages artifact

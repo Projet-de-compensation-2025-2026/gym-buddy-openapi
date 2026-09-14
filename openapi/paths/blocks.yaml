@@ -8,7 +8,8 @@ collection:
       Reverse pending requests are cancelled. Accepted friendship is removed.
       Block hides both from each other's feed, search ranking, and suggestions,
       and prevents new requests or DMs. Self-block is VALIDATION. Missing or
-      closed targets are NOT_FOUND.
+      closed targets are NOT_FOUND. An existing block owned by the other member
+      is NOT_FOUND and remains unchanged; its ownership cannot be reversed.
     parameters:
       - name: Idempotency-Key
         in: header
