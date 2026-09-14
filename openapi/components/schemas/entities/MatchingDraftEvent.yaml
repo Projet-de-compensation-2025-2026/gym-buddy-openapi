@@ -29,4 +29,5 @@ properties:
     description: Always 1 (the matched buddy occupies the only seat).
   visibility:
     type: string
-    enum: [friends]
+    enum: [friends, private]
+    description: New matches create a private event inviting only the matched peer. Friends is retained for older matches.
