@@ -3,9 +3,9 @@ additionalProperties: false
 required: [activity, startsAt, durationMin, capacity, visibility]
 description: |
   Proposed instant session for a weekly match (FS-MATCH-03). Draft,
-  `visibility=friends`, capacity 1. `id` is set when an events row exists;
-  otherwise the pair is still returned and the caller still accepts in the
-  events UI once that surface lands.
+  private invitation for the matched peer, capacity 1. `id` is set when an
+  events row exists; the matched peer applies and the organizer accepts
+  through the events UI.
 properties:
   id:
     type: [string, "null"]
@@ -17,7 +17,7 @@ properties:
   startsAt:
     type: string
     format: date-time
-    description: Midpoint of the overlapping preferred window this week (UTC).
+    description: Start of the overlapping preferred window (UTC); the whole session fits within that window.
   durationMin:
     type: integer
     minimum: 1
